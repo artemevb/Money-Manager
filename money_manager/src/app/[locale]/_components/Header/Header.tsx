@@ -19,42 +19,26 @@ const Header = ({ locale }: LocaleProps) => {
 
   // Define navigation items with translated titles
   const data: NavItem[] = [
-    // {
-    //   title: t('nav.services'),
-    //   slug: 'services',
-    // },
-    // {
-    //   title: t('nav.cases'),
-    //   slug: 'cases',
-    // },
-    // {
-    //   title: t('nav.blog'),
-    //   slug: 'blog',
-    // },
-    // {
-    //   title: t('nav.aboutUs'),
-    //   slug: 'about',
-    // },
     {
-      title: t('nav.services'),
-      slug: '/#services',
+      title: t('nav.about'),
+      slug: '/about',
     },
     {
-      title: t('nav.cases'),
-      slug: '#',
+      title: t('nav.profile'),
+      slug: '/about',
     },
     {
-      title: t('nav.blog'),
-      slug: '/blog',
+      title: t('nav.security'),
+      slug: '/security',
     },
     {
-      title: t('nav.aboutUs'),
-      slug: 'about',
+      title: t('nav.support'),
+      slug: 'support',
     },
   ];
 
   return (
-    <header className="w-full bg-white px-2 h-[120px] max-mdx:h-[80px] ">
+    <header className="w-full bg-white px-2 h-[55px] border-b">
       <div className="w-full max-w-[1440px] flex items-center justify-between gap-2 h-full mx-auto">
         <Logo />
         <Navigation navOptions={data} locale={locale} />

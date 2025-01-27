@@ -1,13 +1,10 @@
 'use client';
-import { useEffect, useRef, ChangeEvent, useTransition } from "react";
-import { useRouter, usePathname } from 'next/navigation';
+import { useEffect, useRef } from "react";
+import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
-// import close from "@/public/svg/tools/close-black.svg";
-import arrow_black from "@/public/svg/arrow_black.svg";
+import close from "@/public/svg/close.svg";
 import { NavItem } from "./Header/NavItem";
-import { useTranslations } from 'next-intl';
-// import axios from 'axios';
 
 interface MenuProps {
     menu: boolean;
@@ -17,16 +14,13 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ menu, closeMenu, navOptions, locale }) => {
-    const t = useTranslations('Header');
     const router = useRouter();
     const menuRef = useRef<HTMLDivElement>(null);
-
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                // If you plan to use the menu for a language switcher, uncomment and use setLanguageMenu
-                // setLanguageMenu(false);
+                closeMenu(); // Закрыть меню при клике за его пределами
             }
         };
 
@@ -34,21 +28,39 @@ const Menu: React.FC<MenuProps> = ({ menu, closeMenu, navOptions, locale }) => {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [menuRef]);
+    }, [menuRef, closeMenu]);
 
     return (
-        <div
-            className={`fixed z-[9999] top-0 right-0 w-full bg-white h-full shadow-md ${menu ? "animate-slideInFromRight" : "transform translate-x-full"} transition-transform duration-300 ease-in-out`}
-        >
-            {/* Header with Language Switcher and Close Button */}
-            <div className="border-b py-4 flex">
-                <div className="w-full flex justify-between mx-4">
+        <>
+            {/* Overlay для затемнения */}
+            {menu && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-[9998] transition-opacity duration-300 ease-in-out"
+                    onClick={closeMenu} // Закрыть меню при клике на overlay
+                />
+            )}
 
-
-
-                </div>
+            {/* Само меню */}
+            <div
+                className={`fixed z-[9999] top-0 right-0 w-[86%] bg-white h-full shadow-md ${
+                    menu ? "animate-slideInFromRight" : "transform translate-x-full"
+                } transition-transform p-[20px] duration-300 ease-in-out`}
+                ref={menuRef} // Привязка рефа для клика вне меню
+            >
+                <button 
+                    className="w-full flex justify-end"
+                    onClick={closeMenu} // Вызов closeMenu при клике на кнопку
+                >
+                    <Image
+                        src={close}
+                        height={24}
+                        width={24}
+                        quality={100}
+                        alt="close"
+                        className="w-full h-full max-w-[24px]"
+                    />
+                </button>
                 <nav className="flex flex-col mt-2 ">
-                    {/* Other Navigation Items */}
                     {navOptions.map((item, index) => (
                         <Link
                             key={index}
@@ -57,21 +69,14 @@ const Menu: React.FC<MenuProps> = ({ menu, closeMenu, navOptions, locale }) => {
                                 router.push(`/${locale}/${item.slug}`);
                             }}
                             href={`/${locale}/${item.slug}`}
-                            className="block border-b py-4 px-6 flex justify-between items-center text-[20px] font-semibold"
+                            className="w-full py-[10px] px-6 flex justify-between items-center text-[20px] font-medium"
                         >
                             <span>{item.title}</span>
-                            <Image
-                                src={arrow_black}
-                                alt="Arrow"
-                                width={20}
-                                height={20}
-                                className="w-[20px] h-[20px]"
-                            />
                         </Link>
                     ))}
                 </nav >
             </div >
-        </div >
+        </>
     );
 };
 

@@ -1,3 +1,19 @@
 {
- 
+    "Header": {
+        "nav": {
+            "about": "О нас",
+            "profile": "Мой профиль",
+            "security": "Настройки и доступы",
+            "support": "Поддержка"
+        }
+    },
+    "Tools": {
+        "autorization": "Вход"
+    },
+    "Footer": {
+        "main": "Главная",
+        "reports": "Отчеты",
+        "clients": "Клиенты",
+        "services": "Услуги"
+    }
 }

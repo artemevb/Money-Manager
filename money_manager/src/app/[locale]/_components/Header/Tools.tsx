@@ -5,10 +5,10 @@ import { useRouter, usePathname } from 'next/navigation';
 import Menu from "../Menu";
 import Image from "next/image";
 import burgerMenu from "@/public/svg/burger-menu.svg";
+import autorization from "@/public/svg/autorization_button.svg";
 import { useTranslations } from "next-intl";
 // import Link from "next/link";
 import { NavItem } from "./NavItem";
-import Application from '../Modals/Application'
 // import axios from 'axios';
 
 interface NavigationProps {
@@ -21,7 +21,6 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
   const [menu, setMenu] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isPending, startTransition] = useTransition();
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -36,19 +35,9 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
 
   // Define the mapping from locale codes to display strings
   const localeDisplay: { [key: string]: string } = {
-    en: 'En',
     ru: 'Ру',
     uz: 'O`z',
   };
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
 
   const handleOpenMenu = () => {
     setMenu(true);
@@ -66,7 +55,7 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
     setDropdownOpen(false);
     startTransition(() => {
       const segments = pathname.split('/');
-      if (['ru', 'uz', 'en'].includes(segments[1])) {
+      if (['ru', 'uz'].includes(segments[1])) {
         segments[1] = nextLocale;
       } else {
         segments.splice(1, 0, nextLocale);
@@ -92,11 +81,24 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
 
   return (
     <div className="flex items-center gap-[12px]">
-      <div className="h-full items-center flex gap-[8px] xl:gap-[12px]">
+      <div className="h-full items-center flex gap-[8px]">
+        <button
+          className='flex items-center text-[14px] font-semibold border border-[#ECE8FF] rounded-[8px] focus:outline-none px-[14px] py-[9px] gap-[4px] bg-[#7E49FF] text-white'>
+          <p>{t('autorization')}</p>
+          <Image
+            src={autorization}
+            height={100}
+            width={100}
+            alt="burger-menu icon"
+            className="w-[16px] h-[16px]"
+          />
+        </button>
+
+
         <div className='relative'>
           <button
             onClick={toggleDropdown}
-            className='flex items-center text-[16px] font-bold border border-[#303030] rounded-full focus:outline-none px-[21.5px] py-[16px]  xl:flex hidden '
+            className='flex items-center text-[16px] font-semibold border border-[#ECE8FF] rounded-[8px] focus:outline-none px-[14px] py-[7px] '
           >
             <span className='sr-only'>Сменить язык</span>
             {localeDisplay[localActive] || localActive.toUpperCase()} {/* Use mapping */}
@@ -113,14 +115,7 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
           {dropdownOpen && (
             <div ref={dropdownRef} className="absolute right-4 w-[60px] bg-white shadow-lg z-10">
               <ul className="py-1">
-                <li>
-                  <button
-                    onClick={() => handleLanguageSelect('en')}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    En
-                  </button>
-                </li>
+
                 <li>
                   <button
                     onClick={() => handleLanguageSelect('ru')}
@@ -143,36 +138,19 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
         </div>
 
         <button
-          onClick={openModal}
-          className="group border rounded-full border-[#303030] hidden xl:flex flex-row items-center pr-[6px]">
-          <p className="text-[#303030] pl-[24px] py-[16px] pr-[10px] text-[18px] font-semibold">{t('button')}</p>
-          {/* <div className=" rounded-full bg-[#000000] w-[40px] h-[40px] flex items-center justify-center">
-            <Image
-              src={arrow_white}
-              alt="arrow white right"
-              width={20}
-              height={20}
-              quality={100}
-              className="transition-transform duration-300 transform group-hover:translate-x-[10px]"
-            />
-
-          </div> */}
-        </button>
-        <button
           onClick={handleOpenMenu}
-          className="py-[4.5px] pl-[6px] pr-[24px] rounded-full 2xl:hidden border border-[#303030] flex flex-row items-center"
+          className="py-[12px] px-[12px] rounded-[8px] border border-[#ECE8FF] flex flex-row items-center"
         >
-          <div className=" w-[40px] h-[40px] rounded-full border border-[#303030] flex justify-center items-center">
+          <div className=" w-[16px] h-[16px] flex justify-center items-center">
             <Image
               src={burgerMenu}
               height={100}
               width={100}
-              alt="burger-menu icon" // Fixed alt attribute
-              className="w-[20px] h-[20px]"
+              alt="burger-menu icon"
+              className="w-[16px] h-[16px]"
             />
 
           </div>
-          <p className="text-[16px] font-bold text-[#303030] ml-[4px]">{t('menu')}</p>
         </button>
 
         {/* Рендер компонента Menu */}
@@ -180,7 +158,6 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
           <Menu menu={menu} closeMenu={handleCloseMenu} navOptions={navOptions} locale={locale} />
         )}
       </div>
-      {isModalOpen && <Application closeModal={closeModal} />}
     </div>
   );
 };
