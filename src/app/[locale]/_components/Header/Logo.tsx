@@ -17,10 +17,6 @@ function Logo() {
           alt="Rmc Logo"
           className="h-full w-auto"
         />
-        {/* <div className="flex flex-col">
-          <div className="text-[15px] mdx:text-[22px] uppercase font-bold">Rmc De Luxe</div>
-          <div className="text-[11.5px] mdx:text-[15px] text-[#E94B50] ls">real estate</div>
-        </div> */}
       </div>
     </Link>
   );

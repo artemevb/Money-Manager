@@ -8,8 +8,12 @@ import burgerMenu from "@/public/svg/burger-menu.svg";
 import autorization from "@/public/svg/autorization_button.svg";
 import { useTranslations } from "next-intl";
 // import Link from "next/link";
-import { NavItem } from "./NavItem";
 // import axios from 'axios';
+
+interface NavItem {
+  title: string;
+  slug: string;
+}
 
 interface NavigationProps {
   navOptions: NavItem[];
@@ -28,12 +32,7 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Добавим логирование текущего языка
-  useEffect(() => {
-    console.log("Текущий язык:", localActive);
-  }, [localActive]);
 
-  // Define the mapping from locale codes to display strings
   const localeDisplay: { [key: string]: string } = {
     ru: 'Ру',
     uz: 'O`z',
@@ -65,7 +64,6 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
     });
   };
 
-  // Закрытие выпадающего списка при клике вне его области
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {

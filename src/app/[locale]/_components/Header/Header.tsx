@@ -4,7 +4,6 @@ import Navigation from "@/src/app/[locale]/_components/Header/Navigation";
 import Tools from "@/src/app/[locale]/_components/Header/Tools";
 import { useTranslations } from 'next-intl';
 
-// Define the structure of navOptions items
 interface NavItem {
   title: string;
   slug: string;

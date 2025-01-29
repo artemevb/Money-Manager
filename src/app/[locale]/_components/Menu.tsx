@@ -4,7 +4,11 @@ import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
 import close from "@/public/svg/close.svg";
-import { NavItem } from "./Header/NavItem";
+
+export interface NavItem {
+    title: string;
+    slug: string;
+}
 
 interface MenuProps {
     menu: boolean;
@@ -20,7 +24,7 @@ const Menu: React.FC<MenuProps> = ({ menu, closeMenu, navOptions, locale }) => {
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                closeMenu(); // Закрыть меню при клике за его пределами
+                closeMenu();
             }
         };
 
@@ -42,12 +46,11 @@ const Menu: React.FC<MenuProps> = ({ menu, closeMenu, navOptions, locale }) => {
 
             {/* Само меню */}
             <div
-                className={`fixed z-[9999] top-0 right-0 w-[86%] bg-white h-full shadow-md ${
-                    menu ? "animate-slideInFromRight" : "transform translate-x-full"
-                } transition-transform p-[20px] duration-300 ease-in-out`}
+                className={`fixed z-[9999] top-0 right-0 w-[86%] bg-white h-full shadow-md ${menu ? "animate-slideInFromRight" : "transform translate-x-full"
+                    } transition-transform p-[20px] duration-300 ease-in-out`}
                 ref={menuRef} // Привязка рефа для клика вне меню
             >
-                <button 
+                <button
                     className="w-full flex justify-end"
                     onClick={closeMenu} // Вызов closeMenu при клике на кнопку
                 >
