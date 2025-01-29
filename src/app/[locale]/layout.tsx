@@ -35,10 +35,11 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Header locale={locale} />
-          {children}
+          <main className="flex-1">{children}</main>
           <Footer locale={locale} />
         </NextIntlClientProvider>
       </body>
     </html>
+
   );
 }
