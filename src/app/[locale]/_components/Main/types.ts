@@ -5,8 +5,3 @@ export interface CardData {
   amount: number;
 }
 
-export interface Transaction {
-  date: string;
-  amount: string;
-  status: 'Одобрено' | 'Отменено';
-}

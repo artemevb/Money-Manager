@@ -1,4 +1,5 @@
 "use client";
+import { useState } from 'react';
 // import resultLogo from "@/public/svg/footer/result-logo.png";
 import Link from "next/link";
 import { useTranslations } from 'next-intl';
@@ -9,6 +10,7 @@ import plus from "@/public/svg/footer/plus.svg";
 import clients from "@/public/svg/footer/clients.svg";
 import services from "@/public/svg/footer/services.svg";
 // import axios from 'axios';
+import CardModal from "./ModalForPlus";
 
 interface LocaleProps {
   locale: string;
@@ -16,6 +18,7 @@ interface LocaleProps {
 
 export default function Footer({ locale }: LocaleProps) {
   const t = useTranslations('Footer');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <footer className=" w-full pt-[8px]  border-t">
@@ -40,18 +43,12 @@ export default function Footer({ locale }: LocaleProps) {
             />
             {t('reports')}</Link>
 
-          <Link
-            href={`/${locale}/`}
+          <button
+            onClick={() => setIsModalOpen(true)}
             className="bg-[#7E49FF] hover:bg-[#8457f7] rounded-full flex justify-center items-center w-[50px] h-[50px] relative -top-[18px]"
           >
-            <Image
-              src={plus}
-              height={100}
-              width={100}
-              alt="burger-menu icon"
-              className="w-[24px] h-[24px]"
-            />
-          </Link>
+            <Image src={plus} height={100} width={100} alt="plus icon" className="w-[24px] h-[24px]" />
+          </button>
 
 
           <Link href={`/${locale}/clients`} className="hover:text-[#B3B3B3] text-[12px] flex items-center flex-col gap-[8px]">
@@ -75,6 +72,7 @@ export default function Footer({ locale }: LocaleProps) {
 
         </div>
       </div>
+      <CardModal isOpen={isModalOpen} locale={locale} onClose={() => setIsModalOpen(false)} />
     </footer >
   );
 }
