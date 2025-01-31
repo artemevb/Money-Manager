@@ -16,7 +16,11 @@ import card from "@/public/svg/main/card.svg";
 import trash from "@/public/svg/main/trash.svg";
 import PaymentsList from "./PaymentsList";
 
-export default function CardState() {
+interface NewsCompProps {
+  locale: string;
+}
+
+export default function CardState({ locale }: NewsCompProps) {
   const [hasCard, setHasCard] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -163,7 +167,7 @@ export default function CardState() {
           </div>
 
           <div className="mt-[40px]">
-          <PaymentsList />
+          <PaymentsList locale={locale}/>
           </div>
         </div>
       )}

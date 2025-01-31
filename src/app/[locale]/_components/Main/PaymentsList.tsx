@@ -1,6 +1,13 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import React from "react";
 import Image from "next/image";
 import arrow_right from "@/public/svg/arrow-right-white.svg";
+
+interface NewsCompProps {
+    locale: string;
+}
 
 interface Payment {
     id: number;
@@ -38,7 +45,10 @@ const payments: Payment[] = [
     },
 ];
 
-const PaymentsList: React.FC = () => {
+const PaymentsListFull = ({ locale }: NewsCompProps) => {
+    const router = useRouter();
+
+
     return (
         <div className="mt-10">
             <h3 className="text-xl font-semibold mb-4">Последние платежи</h3>
@@ -91,12 +101,13 @@ const PaymentsList: React.FC = () => {
                 })}
             </div>
 
-            <button className="mt-[40px] w-auto ml-auto bg-[#7E49FF] text-white font-bold py-[10px] px-[12px] text-[14px] rounded-lg flex items-center gap-[4px] right-0">
+            <button className="mt-[40px] w-auto ml-auto bg-[#7E49FF] text-white font-bold py-[10px] px-[12px] text-[14px] rounded-lg flex items-center gap-[4px] right-0"
+                onClick={() => router.push(`/${locale}/transactions`)}>
                 История транзакций
-                <Image src={arrow_right} width={24} height={24} quality={100} alt="стрелка бля" className=" w-[24px] h-[24px]" />
+                <Image src={arrow_right} width={24} height={24} quality={100} alt="стрелка бля" className="w-[24px] h-[24px]" />
             </button>
         </div>
     );
 };
 
-export default PaymentsList;
+export default PaymentsListFull;
