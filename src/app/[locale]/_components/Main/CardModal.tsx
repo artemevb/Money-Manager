@@ -20,8 +20,8 @@ export default function CardModal({ isOpen, onClose, onCardSubmit }: CardModalPr
 
   // Функция форматирования суммы с пробелами
   const formatAmount = (value: string) => {
-    return value.replace(/\D/g, '') 
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ' '); 
+    return value.replace(/\D/g, '')
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
