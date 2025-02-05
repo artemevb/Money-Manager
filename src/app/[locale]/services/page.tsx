@@ -1,11 +1,11 @@
 
-import ListClients from "../_components/Clients/ListClients";
+import ListServices from "../_components/Services/ListServices";
 
 
-    export default function Clients() {
+export default function Services() {
     return (
         <div className=" bg-[#fff] flex flex-col gap-[90px] mdl:gap-[130px] xl:gap-[180px]">
-            <ListClients/>
+            <ListServices />
         </div>
     );
 }

@@ -113,7 +113,7 @@ const Home: NextPage = () => {
         {clientsData.map((client) => (
           <div
             key={client.id}
-            className="flex flex-col gap-2 items-start justify-between rounded-lg bg-white p-4 shadow"
+            className="flex flex-col gap-2 items-start justify-between rounded-lg bg-white p-5 shadow"
           >
             <div>
               <h2 className="text-sm font-semibold text-gray-800">
