@@ -32,7 +32,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className={montserrat.className}>
-      <body>
+      <body className={montserrat.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Header locale={locale} />
           <main className="flex-1">{children}</main>

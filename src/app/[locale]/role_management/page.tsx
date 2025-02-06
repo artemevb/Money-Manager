@@ -1,11 +1,11 @@
 
-import ListClients from "../_components/Clients/ListClients";
+import List from "../_components/RoleManagement/List";
 
 
-    export default function Clients() {
+    export default function UsersRole() {
     return (
         <div className=" bg-[#fff] flex flex-col gap-[90px] mdl:gap-[130px] xl:gap-[180px]">
-            <ListClients/>
+            <List/>
         </div>
     );
 }
