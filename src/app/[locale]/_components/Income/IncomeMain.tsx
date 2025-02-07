@@ -11,19 +11,25 @@ import pen from '@/public/svg/income/pensel.svg'
 import plus from "@/public/svg/plus_bold.svg";
 import document from '@/public/svg/income/documnet.svg'
 import download from '@/public/svg/income/download.svg'
+import IncomePayModal from './IncomePayMOdal';
 const IncomeMain = () => {
     const router = useRouter();    
     const [jobTitle, setJobTitle] = useState("сайт");
     const [addPay, setAddPay] = useState(false)
     const [otherValute, setOtherValute] = useState('usd')
     const [date, setDate] = useState("");
+    const [open, setOpen] = useState(false)
     const setTodayDate = () => {
         const today = new Date().toISOString().split("T")[0];
         setDate(today);
-      };
+    };
+    const handleCloseModal = () => {
+        setOpen(false)
+    }
+    
     return (
         <div className='p-6 mb-[26px] w-full mx-auto'>
-            {/* Nazat button */}
+            {/* Exit button */}
             <button
                 onClick={() => router.back()} // Возвращаемся на предыдущую страницу
                 className="flex items-center text-[12px] text-[#303030] mb-4"
@@ -41,8 +47,9 @@ const IncomeMain = () => {
                 <p className="text-[24px] text-left font-bold pb-[20px]">Доходы</p>
                 <Image src={income} alt='income' />
             </div>
+            <IncomePayModal open={open} handleClose={handleCloseModal}/>
             <div className="flex flex-col space-y-4">
-                <div className="mt-10 rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
+                <div onClick={() => setOpen(true)} className="mt-10 rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
                     <div className="flex items-center gap-x-2">
                         <Image className='p-2 bg-[#F5F2FF] rounded-full' width={50} height={50} src={userIcon} alt='user a' />
                         <div className="">
@@ -102,6 +109,7 @@ const IncomeMain = () => {
                     />
                 </div>
             </div>
+
             {/*  Добавить еще button */}
             <div className="flex justify-end items-center mt-10">
                 <button
