@@ -24,7 +24,7 @@ const Header = ({ locale }: LocaleProps) => {
     },
     {
       title: t('nav.profile'),
-      slug: '/about',
+      slug: '/about-me',
     },
     {
       title: t('nav.security'),

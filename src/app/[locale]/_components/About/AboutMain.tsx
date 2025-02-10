@@ -23,7 +23,7 @@ interface locale {
 
 const AboutPage = ({locale}: locale) => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
-    const router = useRouter(); // Используем useRouter для навигации
+    const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const toggleFAQ = (index: number) => {
@@ -33,7 +33,7 @@ const AboutPage = ({locale}: locale) => {
     return (
         <div className="p-6 mb-[26px] w-full mx-auto">
             <button
-                onClick={() => router.back()} // Возвращаемся на предыдущую страницу
+                onClick={() => router.back()}
                 className="flex items-center text-[12px] text-[#303030] mb-4"
             >
                 <Image
