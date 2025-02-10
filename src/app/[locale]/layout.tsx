@@ -1,5 +1,5 @@
 // import type { Metadata } from 'next';
-import { Montserrat } from 'next/font/google';
+import { Raleway } from 'next/font/google';
 import '@/src/app/[locale]/_components/styles/globals.css';
 import Header from '@/src/app/[locale]/_components/Header/Header';
 import Footer from '@/src/app/[locale]/_components/Footer/Footer';
@@ -8,7 +8,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 // import Script from 'next/script';
 
-const montserrat = Montserrat({
+const raleway = Raleway({
   subsets: ['latin'],
   weight: ['300', '400', '700', '900'],
   fallback: ['sans-serif'],
@@ -27,12 +27,11 @@ export default async function RootLayout({
 
   unstable_setRequestLocale(locale);
 
-  // Получаем сообщения для текущей локали
   const messages = await getMessages({ locale });
 
   return (
-    <html lang={locale} className={montserrat.className}>
-      <body className={montserrat.className}>
+    <html lang={locale} className={raleway.className}>
+      <body className={raleway.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Header locale={locale} />
           <main className="flex-1">{children}</main>
@@ -40,6 +39,5 @@ export default async function RootLayout({
         </NextIntlClientProvider>
       </body>
     </html>
-
   );
 }
