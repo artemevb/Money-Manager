@@ -14,7 +14,7 @@ import download from '@/public/svg/income/download.svg'
 import IncomePayModal from './IncomePayMOdal';
 const IncomeMain = () => {
     const router = useRouter();    
-    const [jobTitle, setJobTitle] = useState("сайт");
+    const [jobTitle, setJobTitle] = useState("");
     const [addPay, setAddPay] = useState(false)
     const [otherValute, setOtherValute] = useState('usd')
     const [date, setDate] = useState("");
@@ -31,7 +31,7 @@ const IncomeMain = () => {
         <div className='p-6 mb-[26px] w-full mx-auto'>
             {/* Exit button */}
             <button
-                onClick={() => router.back()} // Возвращаемся на предыдущую страницу
+                onClick={() => router.back()}
                 className="flex items-center text-[12px] text-[#303030] mb-4"
             >
                 <Image
@@ -174,9 +174,11 @@ const IncomeMain = () => {
                             backgroundPosition: "right 12px center",
                         }}
                     >
-                        <option value="сайт">Услуги </option>
-                        <option value="реклама">Реклама</option>
-                        <option value="маркетинг">Маркетинг</option>
+                        <option value="" selected disabled>Услуги </option>
+                        <option value="сайт">Разработка сайта  </option>
+                        <option value="telegram-bot">Разработка телеграмм  ботов </option>
+                        <option value="smm">SMM</option>
+                        <option value="reclama">Реклама </option>
                     </select>
                     <div className="relative w-full">
                         <input
