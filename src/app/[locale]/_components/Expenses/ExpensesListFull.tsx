@@ -23,10 +23,11 @@ const Transfer = () => {
 
     const availableCurrencies = ["USD", "EUR", "UZS"];
     const [transactionDetails] = useState({
-        type: "Перемещение",
+        type: "Расходы",
         currency: "Карта суммы 1",
         amount: "3.0 сум",
         transactionDate: "2025-01-09",
+        category: "Реклама",
         comment: "НЕТ",
         file: "НЕТ",
     });
@@ -169,7 +170,7 @@ const Transfer = () => {
                 <div className="flex gap-2 items-center w-full">
                     <button
                         onClick={() => setDate(new Date().toISOString().split("T")[0])}
-                        className="px-[10px] py-[16px] w-full  text-[14px] bg-[#F5F2FF] rounded-[6px] font-medium flex justify-start"
+                        className="px-[10px] py-[16px] w-full  text-[14px] bg-[#F5F2FF] rounded-[6px] font-medium flex justify-start "
                     >
                         Текущая дата
                     </button>
@@ -230,11 +231,15 @@ const Transfer = () => {
                     </span>
                     <span className="font-medium flex items-center">
                         <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Комментарий: {transactionDetails.comment}
+                        Файл транзакции: {transactionDetails.file}
                     </span>
                     <span className="font-medium flex items-center">
                         <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Файл транзакции: {transactionDetails.file}
+                        Категория расхода: {transactionDetails.category}
+                    </span>
+                    <span className="font-medium flex items-center">
+                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                        Комментарий: {transactionDetails.comment}
                     </span>
                 </div>
 
