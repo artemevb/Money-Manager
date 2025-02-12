@@ -31,8 +31,8 @@ export default function CardModal({ isOpen, onClose, onCardSubmit }: CardModalPr
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     onCardSubmit({
-      number: cardNumber.replace(/\s/g, ''),
-      amount: parseFloat(amount.replace(/\s/g, '').replace(',', '.')) || 0
+      cardNumber: cardNumber.replace(/\s/g, ''),
+      balance: parseFloat(amount.replace(/\s/g, '').replace(',', '.')) || 0
     });
   };
 

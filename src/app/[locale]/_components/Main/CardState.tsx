@@ -1,9 +1,9 @@
 // components/CardState.tsx
 "use client";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import CardModal from './CardModal';
 import DeleteConfirmation from './DeleteConfirmation';
-import { CardData } from './types';
+import { CardData, cardType } from './types';
 import Image from "next/image";
 // import Link from "next/link";
 // import logo from "@/public/images/imed-f.svg";
@@ -12,33 +12,46 @@ import plusPurple from "@/public/svg/main/plus_purple.svg";
 import card1 from "@/public/images/main/money1.png";
 import card2 from "@/public/images/main/money2.png";
 import card3 from "@/public/images/main/money3.png";
-import card from "@/public/svg/main/card.svg";
-import trash from "@/public/svg/main/trash.svg";
 import PaymentsList from "./PaymentsList";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { cardUtils } from '@/src/app/utils/card.utils';
+import toast from 'react-hot-toast';
+import OneCard from './oneCard';
 
 interface NewsCompProps {
   locale: string;
 }
 
 export default function CardState({ locale }: NewsCompProps) {
-  const [hasCard, setHasCard] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-
-  useEffect(() => {
-    const savedCard = localStorage.getItem('cardData');
-    setHasCard(!!savedCard);
-  }, []);
-
+  const queryClient = useQueryClient()
+  const addCard = useMutation({
+    mutationFn: cardUtils.postCard,
+    onSuccess: () => {
+      toast.success('Succes add card 💳')
+      queryClient.invalidateQueries({queryKey: ['cards']})
+    },
+    onError: (err) => {
+      console.log(err);    
+      toast.error('Something went wrong')  
+    }
+  })
+  const {data: cards} = useQuery({
+    queryKey: ['cards'],
+    queryFn: cardUtils.homeCard
+  })
+  console.log(cards?.data);
+  
   const handleCardAdd = (cardData: CardData) => {
     localStorage.setItem('cardData', JSON.stringify(cardData));
-    setHasCard(true);
+    addCard.mutate(cardData)
+    console.log(addCard.variables);    
     setIsModalOpen(false);
   };
 
   const handleCardDelete = () => {
     localStorage.removeItem('cardData');
-    setHasCard(false);
     setShowDeleteConfirmation(false);
   };
 
@@ -48,7 +61,7 @@ export default function CardState({ locale }: NewsCompProps) {
 
   return (
     <div className="h-full bg-white p-4 w-full">
-      {!hasCard ? (
+      {!cards?.data ? (
         <>
           <div className=" py-8 text-center w-full mx-auto mt-[48px]">
             <button
@@ -85,7 +98,7 @@ export default function CardState({ locale }: NewsCompProps) {
           <div className="flex justify-between flex-col items-center h-full">
             <div className="bg-gradient-to-br from-[#C1B1FF] via-[#7E49FF] to-[#5718BF] rounded-[16px] text-white px-8 py-[23px] hover:opacity-90 transition-opacity text-[24px] font-bold w-full flex justify-center items-start flex-col max-h-[114px] h-full">
               <h2 className='text-[24px] font-bold'>Баланс</h2>
-              <h2 className="text-[32px] font-bold text-white">1 926 515   <span className='text-[20px] '> сум</span></h2>
+              <h2 className="text-[32px] font-bold text-white">{cards?.data?.balance.toLocaleString()}   <span className='text-[20px] '> сум</span></h2>
             </div>
             <div className="flex flex-row mt-6 w-full">
 
@@ -137,23 +150,12 @@ export default function CardState({ locale }: NewsCompProps) {
             <h3 className="text-[20px] font-bold mt-[40px]">Счета</h3>
 
             <div className='w-full overflow-x-auto flex gap-[5px] mt-[20px] no-scrollbar'>
-              <div className='flex flex-nowrap items-center'>
-                <div className='w-[270px] border-[#F1F5F9] shadow-[0px_8px_8px_0px_#F1F5F9] border rounded-[16px] px-[10px] pt-[10px] pb-[20px] relative shrink-0'>
-                  <div className='w-full flex justify-end text-[14px]'>9860******1467</div>
-                  <div className='w-full flex-row flex gap-[6px]'>
-                    <div className='bg-[#F5F2FF] w-[60px] h-[60px] flex items-center justify-center rounded-[30px]'>
-                      <Image src={card} width={40} height={40} quality={100} alt="Сальдо" className=" w-[40px] h-[40px]" />
-                    </div>
-                    <div className='flex flex-col gap-[8px]'>
-                      <p className='text-[14px]'>Uzcard</p>
-                      <p className='text-[16px] text-[#303030] font-semibold'>1 870.20 UZS</p>
-                    </div>
-                  </div>
-                  <button className='absolute bottom-[15px] right-[15px]'
-                    onClick={() => setShowDeleteConfirmation(true)}>
-                    <Image src={trash} width={16} height={16} quality={100} alt="Удалить" className="w-[24px] h-[24px]" />
-                  </button>
-                </div>
+              <div className='flex flex-nowrap items-center gap-x-3'>
+                {
+                  cards?.data && cards?.data?.cardsOfUser?.cards.map((el: cardType) => (
+                    <OneCard cartName={el.cardType} cartNumber={el.cardNumber} cartPrice={el.balance} key={el.id} />
+                  ))                
+                }
 
                 <button className='text-[11px] font-medium w-full flex flex-col items-center max-w-[75px] shrink-0'
                   onClick={() => setIsModalOpen(true)}>

@@ -1,7 +1,13 @@
 // types.ts
 export interface CardData {
-  number: string;
+  cardNumber: string;
   cardName?: string;
-  amount: number;
+  balance: number;
 }
 
+export interface cardType{
+  balance:number
+cardNumber:string
+cardType:string
+id:number
+}
