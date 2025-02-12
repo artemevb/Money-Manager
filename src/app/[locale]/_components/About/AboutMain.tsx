@@ -116,7 +116,7 @@ const AboutPage = ({locale}: locale) => {
                     </button>
                 </div>
             </div>
-            <CardModal isOpen={isModalOpen} locale={locale} onClose={() => setIsModalOpen(false)} />
+            <CardModal isOpen={isModalOpen} locale={locale} onClose={() => setIsModalOpen(false)}/>
         </div>
     );
 };

@@ -7,6 +7,7 @@ import Image from "next/image";
 import burgerMenu from "@/public/svg/burger-menu.svg";
 import autorization from "@/public/svg/autorization_button.svg";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 // import Link from "next/link";
 // import axios from 'axios';
 
@@ -80,7 +81,8 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
   return (
     <div className="flex items-center gap-[12px]">
       <div className="h-full items-center flex gap-[8px]">
-        <button
+        <Link 
+        href={`/${locale}/sigin`}
           className='flex items-center text-[14px] font-semibold border border-[#ECE8FF] rounded-[8px] focus:outline-none px-[14px] py-[9px] gap-[4px] bg-[#7E49FF] text-white'>
           <p>{t('autorization')}</p>
           <Image
@@ -90,7 +92,7 @@ const LocalSwitcher: React.FC<NavigationProps> = ({ navOptions, locale }) => {
             alt="burger-menu icon"
             className="w-[16px] h-[16px]"
           />
-        </button>
+        </Link>
 
 
         <div className='relative'>

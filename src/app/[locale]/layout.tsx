@@ -6,6 +6,8 @@ import Footer from '@/src/app/[locale]/_components/Footer/Footer';
 import { unstable_setRequestLocale } from 'next-intl/server';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import { Providers } from './_components/QueryProvider';
+import { Toaster } from 'react-hot-toast';
 // import Script from 'next/script';
 
 const raleway = Raleway({
@@ -33,9 +35,12 @@ export default async function RootLayout({
     <html lang={locale} className={raleway.className}>
       <body className={raleway.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Header locale={locale} />
-          <main className="flex-1">{children}</main>
-          <Footer locale={locale} />
+          <Providers>
+            <Header locale={locale} />
+              <main className="flex-1">{children}</main>
+            <Footer locale={locale} />
+            <Toaster/>
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -1,0 +1,1 @@
+export const BASE_URL_SERVER = process.env.NEXT_PUBLIC_SERVER_BASE_URL; 
