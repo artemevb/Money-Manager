@@ -40,6 +40,8 @@ export default function CardState({ locale }: NewsCompProps) {
     queryKey: ['cards'],
     queryFn: cardUtils.homeCard
   }) 
+  console.log(cards);
+  
   // add card
   const handleCardAdd = (cardData: CardData) => {
     localStorage.setItem('cardData', JSON.stringify(cardData));

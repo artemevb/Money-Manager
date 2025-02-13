@@ -12,6 +12,10 @@ import plus from "@/public/svg/plus_bold.svg";
 import document from '@/public/svg/income/documnet.svg'
 import download from '@/public/svg/income/download.svg'
 import IncomePayModal from './IncomePayMOdal';
+import { useQuery } from '@tanstack/react-query';
+import { serviceUtils } from '@/src/app/utils/service.utils';
+import { serviseType } from '../Main/types';
+
 const IncomeMain = () => {
     const router = useRouter();    
     const [jobTitle, setJobTitle] = useState("");
@@ -26,6 +30,12 @@ const IncomeMain = () => {
     const handleCloseModal = () => {
         setOpen(false)
     }
+    // servise get
+    const {data: services} = useQuery({
+        queryKey: ['service'],
+        queryFn: serviceUtils.getService
+    })
+    console.log(services?.data);
     
     return (
         <div className='p-6 mb-[26px] w-full mx-auto'>
@@ -165,8 +175,6 @@ const IncomeMain = () => {
                 <h3 className='text-[20px] font-bold'>Выберите услугу </h3>
                 <div className="flex justify-between gap-x-5 mt-4">
                 <select
-                        value={jobTitle}
-                        onChange={(e) => setJobTitle(e.target.value)}
                         className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10 appearance-none"
                         style={{
                             backgroundImage: "url('/svg/arrow_down.svg')",
@@ -175,10 +183,9 @@ const IncomeMain = () => {
                         }}
                     >
                         <option value="" selected disabled>Услуги </option>
-                        <option value="сайт">Разработка сайта  </option>
-                        <option value="telegram-bot">Разработка телеграмм  ботов </option>
-                        <option value="smm">SMM</option>
-                        <option value="reclama">Реклама </option>
+                        {services?.data && services?.data.map((el: serviseType) => (
+                            <option key={el.id} value={el.id}>{el.name} </option>
+                        ))}
                     </select>
                     <div className="relative w-full">
                         <input
