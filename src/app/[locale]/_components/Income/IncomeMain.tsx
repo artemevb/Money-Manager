@@ -19,12 +19,16 @@ import IncomeHead from './IncomeHead';
 import { clientUtils } from '@/src/app/utils/client.utils';
 import SlelectCardModal from './slelectCardModal';
 import { cardUtils } from '@/src/app/utils/card.utils';
+import { AddServiceModal } from '../Services/AddServiceModal';
+import AddService from './addService';
 
 const IncomeMain = () => {
     const { register, handleSubmit, reset } = useForm();
     const [formData, setFormData] = useState(null);
     const [openCartModal, setOpenCardModal] = useState(false)
+    const [openServiceModal, setOpenServiceModal] = useState(false)
     const [selectCard, setSelectCard] = useState<number>(0)
+    const [selectClient, setSelectClient] = useState<number>(0)
     const [addPay, setAddPay] = useState(false)
     const [otherValute, setOtherValute] = useState('usd')
     const [date, setDate] = useState("");
@@ -44,9 +48,11 @@ const IncomeMain = () => {
     });
     // servise get
     const { data: services } = useQuery({
-        queryKey: ['service'],
+        queryKey: ['services'],
         queryFn: serviceUtils.getService
     })
+    console.log(services);
+    
     // client get
     const { data: clients } = useQuery({
         queryKey: ['clients'],
@@ -57,7 +63,6 @@ const IncomeMain = () => {
         queryKey: ['cards'],
         queryFn: cardUtils.getCard
     })
-    console.log(cards?.data.cards[selectCard]?.cardNumber, selectCard);
     // const createIncome = useMutation({
     //     mutationFn: transactionUtils.postTransaction,
     //     onSuccess: () => {
@@ -74,48 +79,36 @@ const IncomeMain = () => {
     return (
         <div className='p-6 mb-[26px] w-full mx-auto'>
             <IncomeHead />
-            <IncomePayModal open={open} handleClose={() => setOpen(false)} />
+            <IncomePayModal selectClient={(id) => setSelectClient(id)} open={open} handleClose={() => setOpen(false)} />
             <SlelectCardModal selectCard={(id) => setSelectCard(id)} open={openCartModal} handleClose={() => setOpenCardModal(false)} />
             <div className="flex flex-col space-y-4">
-                <div onClick={() => setOpen(true)} className="mt-10 rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
+                {clients?.data &&
+                <div onClick={() => setOpen(true)} className="mt-10 cursor-pointer rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
                     <div className="flex items-center gap-x-2">
                         <Image className='p-2 bg-[#F5F2FF] rounded-full' width={50} height={50} src={userIcon} alt='user a' />
                         <div className="">
                             <p className="text-[14px] text-start pb-[5px]">От кого  </p>
-                            <p className="text-[14px] text-black text-start">{clients?.data[0]?.firstName} </p>
+                            <p className="text-[14px] text-black text-start">{clients?.data[selectClient]?.firstName} </p>
                         </div>
                     </div>
                     <div className="flex flex-col items-end justify-end">
                         <Image src={bottonRow} alt='income' />
-                        <p className='text-black'>{clients?.data[0]?.phone}</p>
+                        <p className='text-black'>{clients?.data[selectClient]?.phone}</p>
                     </div>
-                </div>
-                {selectCard>=0 ? 
-                <div onClick={() => setOpenCardModal(true)} className="mt-10 cursor-pointer rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
+                </div>    
+}                   
+                {cards?.data?.cards?.length &&
+                    <div onClick={() => setOpenCardModal(true)} className="mt-10 cursor-pointer rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
                     <div className="flex items-center gap-x-2">
                         <Image className='p-2 bg-[#F5F2FF] rounded-full' width={50} height={50} src={cardIcon} alt='user a' />
                         <div className="">
-                            <p className="text-[14px] text-start pb-[5px]">{cards?.data.cards[selectCard]?.cardType} </p>
-                            <p className="text-[14px] text-black text-start">{cards?.data.cards[selectCard]?.balance.toLocaleString()}  </p>
+                            <p className="text-[14px] text-start pb-[5px]">{cards?.data?.cards[selectCard]?.cardType} </p>
+                            <p className="text-[14px] text-black text-start">{cards?.data?.cards[selectCard]?.balance.toLocaleString()}  </p>
                         </div>
                     </div>
                     <div className="flex flex-col items-end justify-end">
                         <Image src={bottonRow} alt='income' />
-                        <p className='text-black'>{cards?.data.cards[selectCard]?.cardNumber}</p>
-                    </div>
-                </div>
-                :
-                <div onClick={() => setOpenCardModal(true)} className="mt-10 cursor-pointer rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
-                    <div className="flex items-center gap-x-2">
-                        <Image className='p-2 bg-[#F5F2FF] rounded-full' width={50} height={50} src={cardIcon} alt='user a' />
-                        <div className="">
-                            <p className="text-[14px] text-start pb-[5px]">Зачислить на </p>
-                            <p className="text-[14px] text-black text-start">Счет  </p>
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-end justify-end">
-                        <Image src={bottonRow} alt='income' />
-                        <p className='text-black'></p>
+                        <p className='text-black'>{cards?.data?.cards[selectCard]?.cardNumber}</p>
                     </div>
                 </div>
                 }
@@ -221,7 +214,7 @@ const IncomeMain = () => {
                             <option key={el.id} value={el.id}>{el.name} </option>
                         ))}
                     </select>
-                    <div className="relative w-full">
+                    <div onClick={() => setOpenServiceModal(true)} className="relative w-full">
                         <input
                             type="text"
                             placeholder="Другое "
@@ -235,6 +228,8 @@ const IncomeMain = () => {
                             className="absolute right-3 top-[20px] cursor-pointer"
                         />
                     </div>
+                <AddService open={openServiceModal} handleClose={() => setOpenServiceModal(false)} />
+
                 </div>
             </div>
             {/* Укажите статус дохода */}

@@ -12,9 +12,10 @@ import toast from "react-hot-toast";
 interface ModalProps {
     open: boolean;
     handleClose: () => void;
+    selectClient: (id:number) => void
 }
 
-export default function IncomePayModal({ handleClose, open }: ModalProps) {
+export default function IncomePayModal({ handleClose, open, selectClient }: ModalProps) {
     const [addMore, setAddMore] = useState(false)
     const queryClient = useQueryClient()
     useEffect(() => {
@@ -60,6 +61,10 @@ export default function IncomePayModal({ handleClose, open }: ModalProps) {
             status: "ACTUAL"
         })
     }
+    const handleSlelectClient = (index:number) => {
+        selectClient(index)
+        handleClose()
+    }
     return (
         <div>
             {open && (
@@ -82,8 +87,8 @@ export default function IncomePayModal({ handleClose, open }: ModalProps) {
                                 <p className="text-[18px]">Клиент  </p>
                             </div> */}
                             {
-                                clients?.data.length && clients.data.map((el: clietnType) => (
-                                    <div key={Math.random()} className="w-full rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
+                                clients?.data.length && clients.data.map((el: clietnType, i:number) => (
+                                    <div key={Math.random()} onClick={() => handleSlelectClient(i)} className="w-full cursor-pointer rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
                                         <div className="flex items-center gap-x-2">
                                             <Image className='p-2 bg-[#F5F2FF] rounded-full' width={50} height={50} src={userIcon} alt='user a' />
                                             <div className="">

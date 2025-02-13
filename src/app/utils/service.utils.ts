@@ -9,7 +9,7 @@ export const serviceUtils = {
         const {data} = await customAxios.get(`api/service-type/${id}`)
         return data
     },
-    postService: async (name: string) => {
+    postService: async ({name}:{name: string}) => {
         const {data} = await customAxios.post('api/service-type', {
             name
         })
