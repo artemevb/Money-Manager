@@ -21,17 +21,19 @@ body {
   scrollbar-width: none;
 }
 
-/* globals.css */
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #e5e7eb; /* Tailwind gray-200 */
+  background: #e5e7eb;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #7E49FF; /* Tailwind gray-400 */
+  background-color: #7E49FF;
   border-radius: 4px;
 }
 
+.shadow-transfer {
+  box-shadow: 0px 8px 8px 0px #F1F5F9;
+}

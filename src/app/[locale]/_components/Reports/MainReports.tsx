@@ -21,7 +21,7 @@ const Home: React.FC = () => {
     const [services, setServices] = useState<string[]>([]);
 
     return (
-        <div className="min-h-screen mt-[48px] mb-[40px]">
+        <div className="min-h-screen mt-[48px] mb-[40px] px-[16px]">
             <div className="max-w-xl mx-auto space-y-6">
                 <h1 className="text-2xl font-bold">Выберите тип отчета</h1>
 

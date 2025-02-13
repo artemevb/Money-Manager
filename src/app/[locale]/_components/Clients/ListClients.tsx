@@ -67,7 +67,7 @@ const Home: NextPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       {/* Шапка */}
-      <header className="mb-6">
+      <div className="mb-6">
         <div className="flex items-center justify-between">
           <div className="relative w-full">
             <input
@@ -88,7 +88,7 @@ const Home: NextPage = () => {
             </svg>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Заголовок + кнопка "Добавить" */}
       <div className="mb-4 flex items-center justify-between">
