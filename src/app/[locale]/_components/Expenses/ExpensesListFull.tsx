@@ -242,7 +242,6 @@ const Transfer = () => {
                         Комментарий: {transactionDetails.comment}
                     </span>
                 </div>
-
             </div>
             <div className="flex gap-2 mt-10 font-bold">
                 <button className="px-[19.5px] py-3 text-[#7E49FF] rounded-lg bg-[#ECE8FF] w-full text-[16px]">
