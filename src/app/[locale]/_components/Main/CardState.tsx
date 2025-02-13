@@ -2,7 +2,6 @@
 "use client";
 import { useState } from 'react';
 import CardModal from './CardModal';
-import DeleteConfirmation from './DeleteConfirmation';
 import { CardData, cardType } from './types';
 import Image from "next/image";
 // import Link from "next/link";
@@ -24,7 +23,6 @@ interface NewsCompProps {
 
 export default function CardState({ locale }: NewsCompProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const queryClient = useQueryClient()
   const addCard = useMutation({
     mutationFn: cardUtils.postCard,
@@ -37,22 +35,17 @@ export default function CardState({ locale }: NewsCompProps) {
       toast.error('Something went wrong')  
     }
   })
+  // get data
   const {data: cards} = useQuery({
     queryKey: ['cards'],
     queryFn: cardUtils.homeCard
-  })
-  console.log(cards?.data);
-  
+  }) 
+  // add card
   const handleCardAdd = (cardData: CardData) => {
     localStorage.setItem('cardData', JSON.stringify(cardData));
     addCard.mutate(cardData)
     console.log(addCard.variables);    
     setIsModalOpen(false);
-  };
-
-  const handleCardDelete = () => {
-    localStorage.removeItem('cardData');
-    setShowDeleteConfirmation(false);
   };
 
   const income = 1_500_000; // Доходы
@@ -153,7 +146,7 @@ export default function CardState({ locale }: NewsCompProps) {
               <div className='flex flex-nowrap items-center gap-x-3'>
                 {
                   cards?.data && cards?.data?.cardsOfUser?.cards.map((el: cardType) => (
-                    <OneCard cartName={el.cardType} cartNumber={el.cardNumber} cartPrice={el.balance} key={el.id} />
+                    <OneCard id={el.id}  cartName={el.cardType} cartNumber={el.cardNumber} cartPrice={el.balance} key={el.id} />
                   ))                
                 }
 
@@ -164,7 +157,6 @@ export default function CardState({ locale }: NewsCompProps) {
                 </button>
               </div>
             </div>
-
 
           </div>
 
@@ -180,11 +172,6 @@ export default function CardState({ locale }: NewsCompProps) {
         onCardSubmit={handleCardAdd}
       />
 
-      <DeleteConfirmation
-        isOpen={showDeleteConfirmation}
-        onClose={() => setShowDeleteConfirmation(false)}
-        onConfirm={handleCardDelete}
-      />
     </div>
   );
 }
