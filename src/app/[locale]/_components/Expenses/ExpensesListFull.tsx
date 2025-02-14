@@ -58,7 +58,7 @@ const Transfer = () => {
     };
 
     return (
-        <div className="max-w-sm mx-auto px-[16px] my-[30px]">
+        <div className="px-[16px] my-[30px]">
             <button
                 onClick={() => router.back()}
                 className="flex items-center text-[12px] text-[#303030] mb-5"

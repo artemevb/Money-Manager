@@ -1,4 +1,4 @@
-import { transactionType } from "../[locale]/_components/Main/types"
+import { incomeTrancaptionType, transactionType } from "../[locale]/_components/Main/types"
 import { customAxios } from "../configs"
 
 export const transactionUtils = {
@@ -6,10 +6,16 @@ export const transactionUtils = {
         const {data} = await customAxios.get('api/transaction')
         return data 
     },
-    postTransaction: async ({amount,comment,files,fromCardId,fromClientId,incomeStatus,moneyType,serviceTypeId,toCardId,transactionDate,transactionType,toCategoryConsumptionId}: transactionType) => {
+    postIncome: async ({amount,comment,files,fromClientId,incomeStatus,moneyType,serviceTypeId,toCardId,transactionDate,transactionType}: incomeTrancaptionType) => {
         const {data} = await customAxios.post('api/transaction', {
-            amount, comment, files, fromCardId, fromClientId, incomeStatus, moneyType, serviceTypeId, toCardId, transactionDate, transactionType,toCategoryConsumptionId
+            amount, comment, files, fromClientId, incomeStatus, moneyType, serviceTypeId, toCardId, transactionDate, transactionType,
         })
         return data
-    }
+    },
+    postMoving: async ({amount,comment,files,fromClientId,moneyType,toCardId,transactionType}: transactionType) => {
+        const {data} = await customAxios.post('api/transaction', {
+            amount, comment, files, fromClientId,  moneyType, toCardId,  transactionType,
+        })
+        return data
+    },
 }

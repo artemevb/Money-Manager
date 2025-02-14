@@ -20,7 +20,7 @@ export interface transactionType{
   transactionType: "MOVING" | "CONSUMPTION" | "INCOME"
   moneyType: string,
   amount: number,
-  transactionDate: string,
+  transactionDate: string | "",
   comment: string,
   files: File
   serviceTypeId: number,
@@ -30,6 +30,18 @@ export interface transactionType{
   fromCardId: number,
   toCategoryConsumptionId?: number
 }
+export interface incomeTrancaptionType{
+  transactionType: string
+  moneyType: string,
+  amount: number,
+  transactionDate: string,
+  comment: string,
+  files: File | "" | null
+  serviceTypeId: number,
+  incomeStatus: string
+  toCardId: number,
+  fromClientId: number,
+}
 
 export interface clietnType{
   firstName: string,
@@ -38,4 +50,18 @@ export interface clietnType{
   phone: string,
   status: "ACTUAL",
   serviceTypeId: number
+}
+export interface transactionTypeOnsubmit {
+  type: string;
+  transactionType: string;
+  amount: number;
+  moneyType: string;
+  serviceTypeId: number;
+  transactionDate: string;
+  incomeStatus: string;
+  comment: string;
+  file?: File | "" | null; 
+  fromClientId?: number;
+  toCardId?: number;
+  fromCardId?: number;
 }
