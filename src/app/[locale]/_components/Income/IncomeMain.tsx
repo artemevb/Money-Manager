@@ -183,7 +183,7 @@ const IncomeMain = () => {
                     <div className="relative w-full">
                         <input
                             type="tel"
-                            {...register('amount')}
+                            {...register("amount", { valueAsNumber: true })}
                             required
                             placeholder="Введите сумму"
                             className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
