@@ -40,11 +40,17 @@ const paymedType = [
 ]
 
 const IncomeMain = () => {
+    
+    const [firstCurrency, setFirstCurrency] = useState({ moneyType: "USD", amount: 0 });
+    const [secondCurrency, setSecondCurrency] = useState<{ moneyType: string; amount: number } | null>({ moneyType: '', amount: 0 });
     const { register, handleSubmit, reset, setValue} = useForm({
         defaultValues: {
             type: "Доход",
             transactionType:"INCOME",
-            amount: "",
+            transactionDetails: [{
+                moneyType:firstCurrency.moneyType,
+                amount: firstCurrency.amount,
+            }],
             moneyType:"USD",
             serviceTypeId:"",
             transactionDate: "",
@@ -59,11 +65,18 @@ const IncomeMain = () => {
     const [selectCard, setSelectCard] = useState<number>(0)
     const [selectClient, setSelectClient] = useState<number>(0)
     const [addPay, setAddPay] = useState(false)
-    const [otherValute, setOtherValute] = useState('usd')
     const [date, setDate] = useState("");
     const [open, setOpen] = useState(false)
     const [viewData, setViewData] = useState(false)
     const [selectIncomeStatus, setSelectIncomeStatus] = useState('')
+
+    const handleFirstChange = (field: string, value: string | number) => {
+        setFirstCurrency((prev) => ({ ...prev, [field]: value }));
+    };
+    
+    const handleSecondChange = (field: string, value: string | number) => {        
+        setSecondCurrency((prev) => prev ? { ...prev, [field]: value } : { moneyType: '', amount: 0 });        
+    };    
     const setTodayDate = () => {
         const today = new Date().toISOString().split("T")[0];
         setDate(today);
@@ -100,20 +113,19 @@ const IncomeMain = () => {
             toast.error('seometheng went wrong')
         }
     })
-    
+    const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount },{ moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
     const handleIncome = () => {
         if(formData){
             createIncome.mutate({
-                amount: Number(formData.amount),
-                comment: formData.comment,
-                files: formData.file || "",
-                toCardId: cards?.data?.cards[selectCard]?.id,
+                transactionType: formData.transactionType,
+                serviceTypeId: Number(formData.serviceTypeId),
                 incomeStatus: formData.incomeStatus,
                 fromClientId: clients?.data[selectClient]?.id,
-                moneyType: formData.moneyType,
-                serviceTypeId: formData.serviceTypeId,
+                toCardId: cards?.data?.cards[selectCard]?.id,
+                files: formData.file || "",
                 transactionDate: formData.transactionDate,
-                transactionType: formData.transactionType
+                comment: formData.comment,
+                transactionDetails: transactionDetailsData,
             })
         }
         console.log(createIncome.variables);        
@@ -166,8 +178,8 @@ const IncomeMain = () => {
                     <div className="w-full flex justify-between items-center">
                         <p className='text-[20px] font-bold'>Введите сумму</p>
                         <select
-                            defaultValue='USD'
-                            {...register("moneyType")} 
+                            defaultValue={firstCurrency.moneyType}
+                            onChange={(e) => handleFirstChange("moneyType", e.target.value)}
                             className="w-[90px] rounded-md text-[20px] font-medium px-2 appearance-none outline-none"
                             style={{
                                 backgroundImage: "url('/svg/income/USD.svg')",
@@ -183,7 +195,7 @@ const IncomeMain = () => {
                     <div className="relative w-full">
                         <input
                             type="tel"
-                            {...register("amount", { valueAsNumber: true })}
+                            onChange={(e) => handleFirstChange("amount", Number(e.target.value))}
                             required
                             placeholder="Введите сумму"
                             className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
@@ -201,6 +213,7 @@ const IncomeMain = () => {
                 {/*  Добавить еще button */}
                 <div className="flex justify-end items-center mt-10">
                     <button
+                        type='button'
                         onClick={() => setAddPay((e) => !e)}
                         className="flex items-center gap-2 rounded-lg bg-[#7E49FF] px-3 py-2 text-sm font-bold text-white hover:bg-[#8455fc]"
                     >
@@ -218,9 +231,8 @@ const IncomeMain = () => {
                 <div className={`${addPay ? 'flex' : 'hidden'} w-full flex-col justify-between items-start space-y-5 mt-10`}>
                     <div className="w-full flex justify-between items-center">
                         <p className='text-[20px] font-bold'>Введите сумму</p>
-                        <select
-                            value={otherValute}
-                            onChange={(e) => setOtherValute(e.target.value)}
+                        <select                            
+                            onChange={(e) => handleSecondChange("moneyType", e.target.value)}
                             className="w-[90px] rounded-md text-[20px] font-medium px-2 appearance-none outline-none"
                             style={{
                                 backgroundImage: "url('/svg/income/USD.svg')",
@@ -228,15 +240,16 @@ const IncomeMain = () => {
                                 backgroundPosition: "right 12px center",
                             }}
                         >
-                            <option value="usd">USD</option>
-                            <option value="sum">SUM</option>
-                            <option value="evro">EVRO</option>
+                            <option value="USD">USD</option>
+                            <option value="UZB">SUM</option>
+                            <option value="EVRO">EVRO</option>
                         </select>
                     </div>
                     <div className="relative w-full">
                         <input
                             type="text"
                             placeholder="Введите сумму"
+                            onChange={(e) => handleSecondChange("amount", Number(e.target.value))}
                             className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
                         />
                         <Image
@@ -282,7 +295,6 @@ const IncomeMain = () => {
                             />
                         </div>
                         <AddService open={openServiceModal} handleClose={() => setOpenServiceModal(false)} />
-
                     </div>
                 </div>
                 {/* Укажите статус дохода */}
@@ -350,12 +362,16 @@ const IncomeMain = () => {
                     </span>
                     <span className="font-medium flex items-center">
                         <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Валюта: {formData?.moneyType}
+                        Валюта: {transactionDetailsData[0].moneyType}
                     </span>
                     <span className="font-medium flex items-center">
                         <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Сумма транзакции: {formData?.amount} <span className='lowercase ml-2'>{formData?.moneyType}</span>
+                        Сумма транзакции: {transactionDetailsData[0].amount} <span className='lowercase ml-2'>{transactionDetailsData[0].moneyType}</span>
                     </span>
+                    {secondCurrency?.amount ?  <span className="font-medium flex items-center">
+                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                        Сумма транзакции: {transactionDetailsData[1].amount} <span className='lowercase ml-2'>{transactionDetailsData[1].moneyType}</span>
+                    </span> : ''}
                     <span className="font-medium flex items-center">
                         <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
                         Дата транзакции: {formData?.transactionDate}

@@ -31,10 +31,13 @@ export interface transactionType{
   fromCardId: number,
   toCategoryConsumptionId?: number
 }
+interface trasactionDetales{
+  moneyType: string,
+  amount: number
+}
 export interface incomeTrancaptionType{
   transactionType: string
-  moneyType: string,
-  amount: number,
+  transactionDetails: trasactionDetales[]
   transactionDate: string,
   comment: string,
   files: File | "" | null
@@ -55,8 +58,7 @@ export interface clietnType{
 export interface transactionTypeOnsubmit {
   type: string;
   transactionType: string;
-  amount: number;
-  moneyType: string;
+  transactionDetails: trasactionDetales[]
   serviceTypeId: number;
   transactionDate: string;
   incomeStatus: string;

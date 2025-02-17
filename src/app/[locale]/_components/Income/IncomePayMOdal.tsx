@@ -1,6 +1,6 @@
 'use client'
 import Image from "next/image";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import userIcon from '@/public/svg/income/user.svg'
 import bottonRow from '@/public/svg/income/botton-arrow.svg'
 import plus from "@/public/svg/plus_bold.svg";
@@ -19,6 +19,7 @@ interface ModalProps {
 export default function IncomePayModal({ handleClose, open, selectClient }: ModalProps) {
     const [addMore, setAddMore] = useState(false)
     const queryClient = useQueryClient()
+    const formRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (open) {
             document.body.style.overflow = "hidden"; // Scrollni o‘chirish
@@ -43,27 +44,32 @@ export default function IncomePayModal({ handleClose, open, selectClient }: Moda
         onSuccess: () => {
             toast.success('Success new client')
             queryClient.invalidateQueries({queryKey: ['clients']})
-            // setAddMore(false)
-            // handleClose()
+            setAddMore(false)
+            handleClose()
         },
         onError: (err) => {
             console.log(err);           
             toast.error('Something went wrong') 
         }
     })
-    const handleAddClient = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();     
-        const form = e.currentTarget
-        createClient.mutate({
-            firstName: form.firstName.value,
-            lastName: form.lastName.value,
-            fatherName: form.fatherName.value,
-            phone: form.phone.value,
-            serviceTypeId: form.service.value,
-            status: "ACTUAL"
-        })
-    };
+    const handleAddClient = () => {
+        if (!formRef.current) return;
     
+        const firstName = (formRef.current.querySelector("[name=firstName]") as HTMLInputElement)?.value;
+        const lastName = (formRef.current.querySelector("[name=lastName]") as HTMLInputElement)?.value;
+        const fatherName = (formRef.current.querySelector("[name=fatherName]") as HTMLInputElement)?.value;
+        const phone = (formRef.current.querySelector("[name=phone]") as HTMLInputElement)?.value;
+        const serviceTypeId = (formRef.current.querySelector("[name=service]") as HTMLSelectElement)?.value;
+    
+        createClient.mutate({
+            firstName,
+            lastName,
+            fatherName,
+            phone,
+            serviceTypeId: Number(serviceTypeId),
+            status: "ACTUAL"
+        });
+    };
     const handleSlelectClient = (index:number) => {
         selectClient(index)
         handleClose()
@@ -120,7 +126,7 @@ export default function IncomePayModal({ handleClose, open, selectClient }: Moda
                                 className="h-5 w-auto"
                             />
                         </button>}
-                        {addMore && <form onSubmit={handleAddClient} className="mt-10">
+                        {addMore && <div ref={formRef} className="mt-10">
                             <div className="flex justify-between gap-x-2">
                                 <div className="relative w-full">
                                     <input
@@ -201,8 +207,8 @@ export default function IncomePayModal({ handleClose, open, selectClient }: Moda
                                         className="absolute right-3 top-[20px] cursor-pointer"
                                     />
                             </div>
-                            <button className="w-full py-3 bg-[#7E49FF] text-white font-bold text-[16px] rounded-[8px] mt-3" type="submit" >Сохранить  </button>
-                        </form>
+                            <button className="w-full py-3 bg-[#7E49FF] text-white font-bold text-[16px] rounded-[8px] mt-3" type="button" onClick={handleAddClient} >Сохранить  </button>
+                        </div>
                         }
                     </div>
                 </div>
