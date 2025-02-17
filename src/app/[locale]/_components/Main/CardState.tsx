@@ -47,10 +47,11 @@ export default function CardState({ locale }: NewsCompProps) {
     console.log(addCard.variables);    
     setIsModalOpen(false);
   };
-
-  const income = 1_500_000; // Доходы
-  const expenses = 850_000; // Расходы
-  const balance = income - expenses; // Сальдо
+  console.log(cards);
+  
+  const income = cards?.data?.summa?.incomeSum; // Доходы
+  const expenses = cards?.data?.summa?.consumptionSum; // Расходы
+  const balance = cards?.data?.summa?.saldoSum; // Сальдо
 
   return (
     <div className="h-full bg-white p-4 w-full">
@@ -107,7 +108,7 @@ export default function CardState({ locale }: NewsCompProps) {
                     <span className="text-[8px] font-medium">за месяц</span>
                   </div>
                 </div>
-                <span className="text-[12px] font-semibold mt-2 flex flex-row items-center">{income.toLocaleString()} <p className='text-[10px] font-medium'> сум</p></span>
+                <span className="text-[12px] font-semibold mt-2 flex flex-row items-center">{income.toLocaleString()} <p className='text-[10px] ml-1 font-medium'> сум</p></span>
               </div>
 
               {/* Расходы */}

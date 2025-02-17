@@ -40,7 +40,7 @@ export interface incomeTrancaptionType{
   transactionDetails: trasactionDetales[]
   transactionDate: string,
   comment: string,
-  files: File | "" | null
+  files?: File  | null
   serviceTypeId: number,
   incomeStatus: string
   toCardId: number,
@@ -63,7 +63,7 @@ export interface transactionTypeOnsubmit {
   transactionDate: string;
   incomeStatus: string;
   comment: string;
-  file?: string; 
+  files: File[] | null;
   fromClientId?: number;
   toCardId?: number;
   fromCardId?: number;

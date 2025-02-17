@@ -56,7 +56,7 @@ const IncomeMain = () => {
             transactionDate: "",
             incomeStatus: '',
             comment: "",
-            file: "",
+            files: null,
         },
     });
     const [formData, setFormData] = useState<transactionTypeOnsubmit | null>(null);
@@ -115,20 +115,20 @@ const IncomeMain = () => {
     })
     const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount },{ moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
     const handleIncome = () => {
-        if(formData){
+        if (formData) {
             createIncome.mutate({
                 transactionType: formData.transactionType,
                 serviceTypeId: Number(formData.serviceTypeId),
                 incomeStatus: formData.incomeStatus,
                 fromClientId: clients?.data[selectClient]?.id,
                 toCardId: cards?.data?.cards[selectCard]?.id,
-                files: '',
                 transactionDate: formData.transactionDate,
                 comment: formData.comment,
                 transactionDetails: transactionDetailsData,
-            })
+                files: formData.files ? formData.files[0] : null,
+            });
         }
-        console.log(createIncome.variables);        
+        console.log(createIncome.variables);
     }
     const handleChangeIncomeStatus = (value: string) => {
         setSelectIncomeStatus(value)
@@ -188,7 +188,7 @@ const IncomeMain = () => {
                             }}
                         >
                             <option value="USD">USD</option>
-                            <option value="UZB">SUM</option>
+                            <option value="UZS">SUM</option>
                             <option value="EVRO">EVRO</option>
                         </select>
                     </div>
@@ -241,7 +241,7 @@ const IncomeMain = () => {
                             }}
                         >
                             <option value="USD">USD</option>
-                            <option value="UZB">SUM</option>
+                            <option value="UZS">SUM</option>
                             <option value="EVRO">EVRO</option>
                         </select>
                     </div>
@@ -345,7 +345,7 @@ const IncomeMain = () => {
                         </div>
                         <div className='w-full rounded-md font-medium mt-5 px-2 py-[16px] bg-[#F5F2FF] text-sm flex justify-between items-center'>
                             <span className='flex gap-x-2 w-[250px] absolute'><Image src={document} alt='document' /> Загрузка файла</span>
-                            <input {...register('file')} type="file" className='w-full h-full opacity-0' />
+                            <input {...register('files')} type="file" className='w-full h-full opacity-0' />
                             <Image src={download} alt='download' />
                         </div>
                     </div>
