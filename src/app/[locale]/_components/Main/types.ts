@@ -9,7 +9,8 @@ export interface cardType {
   balance: number
   cardNumber: string
   cardType: string
-  id: number
+  id: number,
+  moneyType:string
 }
 export interface serviseType {
   countTransaction: number

@@ -1,3 +1,4 @@
+'use client'
 import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
 import userIcon from '@/public/svg/income/user.svg'
@@ -42,15 +43,16 @@ export default function IncomePayModal({ handleClose, open, selectClient }: Moda
         onSuccess: () => {
             toast.success('Success new client')
             queryClient.invalidateQueries({queryKey: ['clients']})
-            setAddMore(false)
-            handleClose()
+            // setAddMore(false)
+            // handleClose()
         },
         onError: (err) => {
-            console.log(err);            
+            console.log(err);           
+            toast.error('Something went wrong') 
         }
     })
-    const handleAddClient = (e: FormEvent<HTMLFormElement>)=>{
-        e.preventDefault()
+    const handleAddClient = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();     
         const form = e.currentTarget
         createClient.mutate({
             firstName: form.firstName.value,
@@ -60,7 +62,8 @@ export default function IncomePayModal({ handleClose, open, selectClient }: Moda
             serviceTypeId: form.service.value,
             status: "ACTUAL"
         })
-    }
+    };
+    
     const handleSlelectClient = (index:number) => {
         selectClient(index)
         handleClose()
@@ -198,7 +201,7 @@ export default function IncomePayModal({ handleClose, open, selectClient }: Moda
                                         className="absolute right-3 top-[20px] cursor-pointer"
                                     />
                             </div>
-                            <button className="w-full py-3 bg-[#7E49FF] text-white font-bold text-[16px] rounded-[8px] mt-3" type="submit">Сохранить  </button>
+                            <button className="w-full py-3 bg-[#7E49FF] text-white font-bold text-[16px] rounded-[8px] mt-3" type="submit" >Сохранить  </button>
                         </form>
                         }
                     </div>

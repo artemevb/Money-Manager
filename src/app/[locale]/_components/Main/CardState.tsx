@@ -91,7 +91,7 @@ export default function CardState({ locale }: NewsCompProps) {
           <div className="flex justify-between flex-col items-center h-full">
             <div className="bg-gradient-to-br from-[#C1B1FF] via-[#7E49FF] to-[#5718BF] rounded-[16px] text-white px-8 py-[23px] hover:opacity-90 transition-opacity text-[24px] font-bold w-full flex justify-center items-start flex-col max-h-[114px] h-full">
               <h2 className='text-[24px] font-bold'>Баланс</h2>
-              <h2 className="text-[32px] font-bold text-white">{cards?.data?.balance?.toLocaleString()}   <span className='text-[20px] '> сум</span></h2>
+              <h2 className="text-[32px] font-bold text-white">{cards?.data?.cardsOfUser?.totalBalance?.toLocaleString()}   <span className='text-[20px] '> сум</span></h2>
             </div>
             <div className="flex flex-row mt-6 w-full">
 
@@ -146,7 +146,7 @@ export default function CardState({ locale }: NewsCompProps) {
               <div className='flex flex-nowrap items-center gap-x-3'>
                 {
                   cards?.data && cards?.data?.cardsOfUser?.cards.map((el: cardType) => (
-                    <OneCard id={el.id}  cartName={el.cardType} cartNumber={el.cardNumber} cartPrice={el.balance} key={el.id} />
+                    <OneCard id={el.id}  cartName={el.cardType} cartNumber={el.cardNumber} cartPrice={el.balance} key={el.id} monyType={el.moneyType}/>
                   ))                
                 }
 

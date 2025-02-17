@@ -12,6 +12,7 @@ interface cartProps {
     cartNumber: string,
     cartPrice: number,
     cartName: string,
+    monyType: string
 }
 
 const OneCard = (data: cartProps) => {
@@ -46,7 +47,7 @@ const OneCard = (data: cartProps) => {
                     </div>
                     <div className='flex flex-col gap-[8px]'>
                         <p className='text-[14px]'>{data.cartName}</p>
-                        <p className='text-[16px] text-[#303030] font-semibold'>{data.cartPrice.toLocaleString()} UZS</p>
+                        <p className='text-[16px] text-[#303030] font-semibold'>{data.cartPrice.toLocaleString()} {data?.monyType}</p>
                     </div>
                 </div>
                 <button className='absolute bottom-[15px] right-[15px]'
