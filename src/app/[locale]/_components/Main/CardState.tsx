@@ -108,7 +108,7 @@ export default function CardState({ locale }: NewsCompProps) {
                     <span className="text-[8px] font-medium">за месяц</span>
                   </div>
                 </div>
-                <span className="text-[12px] font-semibold mt-2 flex flex-row items-center">{income.toLocaleString()} <p className='text-[10px] ml-1 font-medium'> сум</p></span>
+                <span className="text-[12px] font-semibold mt-2 flex flex-row items-center">{income?.toLocaleString()} <p className='text-[10px] ml-1 font-medium'> сум</p></span>
               </div>
 
               {/* Расходы */}
@@ -122,7 +122,7 @@ export default function CardState({ locale }: NewsCompProps) {
                     <span className="text-[8px] font-medium">за месяц</span>
                   </div>
                 </div>
-                <span className="text-[12px] font-semibold mt-2 flex flex-row items-center gap-[3px]">{expenses.toLocaleString()} <p className='text-[10px] font-medium'> сум</p></span>
+                <span className="text-[12px] font-semibold mt-2 flex flex-row items-center gap-[3px]">{expenses?.toLocaleString()} <p className='text-[10px] font-medium'> сум</p></span>
               </div>
 
               {/* Сальдо */}
@@ -136,7 +136,7 @@ export default function CardState({ locale }: NewsCompProps) {
                     <span className="text-[8px] font-medium">за месяц</span>
                   </div>
                 </div>
-                <span className="text-[12px] font-semibold mt-2 flex flex-row items-center gap-[3px]">{balance.toLocaleString()} <p className='text-[10px] font-medium'> сум</p></span>
+                <span className="text-[12px] font-semibold mt-2 flex flex-row items-center gap-[3px]">{balance?.toLocaleString()} <p className='text-[10px] font-medium'> сум</p></span>
               </div>
             </div>
           </div>

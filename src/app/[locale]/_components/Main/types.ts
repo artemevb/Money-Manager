@@ -17,19 +17,14 @@ export interface serviseType {
   id: number
   name: string
 }
-export interface transactionType{
-  transactionType: "MOVING" | "CONSUMPTION" | "INCOME"
-  moneyType: string,
-  amount: number,
+export interface transactionExpensesType{
+  transactionType: "CONSUMPTION"
+  fromCardId: number,
+  toCategoryConsumptionId: number
+  files: File
   transactionDate: string | "",
   comment: string,
-  files: File
-  serviceTypeId: number,
-  incomeStatus: "PREPAYMENT" | "PLANNED" | "POSTPAY" | "FINZAYM"
-  fromClientId: number,
-  toCardId: number,
-  fromCardId: number,
-  toCategoryConsumptionId?: number
+  transactionDetails: trasactionDetales[]
 }
 interface trasactionDetales{
   moneyType: string,

@@ -4,9 +4,10 @@ import Image from "next/image";
 
 type Card = {
     id: number;
-    type: string;
+    cardType: string;
     balance: string;
     cardNumber: string;
+    moneyType: string
 };
 
 type ModalCardSelectionProps = {
@@ -26,6 +27,8 @@ const ModalCardSelection: React.FC<ModalCardSelectionProps> = ({
     availableCards,
     selectedCardNumber,
 }) => {
+    console.log(availableCards);
+    
     if (!isOpen) return null;
 
     return (
@@ -33,7 +36,7 @@ const ModalCardSelection: React.FC<ModalCardSelectionProps> = ({
             <div className="bg-white rounded-[16px] p-5 w-[90%] max-w-sm">
                 <h2 className="text-xl font-semibold mb-4">{title}</h2>
                 <ul className="space-y-3">
-                    {availableCards.map((card) => {
+                    {availableCards?.length && availableCards?.map((card) => {
                         const isSelected = card.cardNumber === selectedCardNumber;
                         return (
                             <li
@@ -49,7 +52,7 @@ const ModalCardSelection: React.FC<ModalCardSelectionProps> = ({
                                         <Image src={Card} alt="Карта" width={32} height={32} />
                                     </div>
                                     <div>
-                                        <div className="text-[12px] text-[#303030]">{card.type}</div>
+                                        <div className="text-[12px] text-[#303030]">{card.cardType}</div>
                                         <div className="text-[16px] font-semibold text-[#303030]">{card.balance}</div>
                                     </div>
                                 </div>

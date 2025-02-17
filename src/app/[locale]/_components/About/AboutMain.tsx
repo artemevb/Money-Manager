@@ -8,14 +8,9 @@ import arrowBack from '@/public/svg/clients/arrow_back.svg';
 import plus from '@/public/svg/plus_purple.svg';
 import phone from '@/public/svg/phone_for_about.svg';
 import CardModal from "../Footer/ModalForPlus";
+import { useTranslations } from "next-intl";
 
-const faqs = [
-    { question: "Для чего нужен сайт ?", answer: "Сайт помогает привлекать клиентов, автоматизировать процессы и улучшать маркетинг." },
-    { question: "Как вы работаете", answer: "Работа начинается с тщательного сбора информации о вашем бизнесе, целевой аудитории и текущих потребностях." },
-    { question: "Что даст SMM ?", answer: "SMM помогает повысить узнаваемость бренда, увеличить продажи и наладить коммуникацию с клиентами." },
-    { question: "В чем отличие SEO и контекстной рекламы ?", answer: "SEO работает на долгосрочную перспективу, а контекстная реклама дает быстрые результаты." },
-    { question: "Какое преимущество видеомаркетинга ?", answer: "Видеомаркетинг привлекает больше внимания, улучшает вовлеченность и повышает доверие к бренду." }
-];
+
 
 interface locale {
     locale : string;
@@ -25,7 +20,15 @@ const AboutPage = ({locale}: locale) => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const t = useTranslations("About")
 
+    const faqs = [
+        { question: t('ques1'), answer: t('answer1') },
+        { question: t('ques2'), answer: t('answer2') },
+        { question: t('ques4'), answer: t('answer4') },
+        { question: t('ques5'), answer: t('answer5') },
+        { question: t('ques6'), answer: t('answer6') },
+    ];
     const toggleFAQ = (index: number) => {
         setOpenIndex(openIndex === index ? null : index);
     };

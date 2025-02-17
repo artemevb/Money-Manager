@@ -14,12 +14,41 @@ import pen from '@/public/svg/pen.svg';
 import download from '@/public/svg/downloaded_black.svg';
 import document from '@/public/svg/doc.svg';
 import ExpensesCategoryModal from "./ExpensesCategoryModal";
+import { useQuery } from "@tanstack/react-query";
+import { cardUtils } from "@/src/app/utils/card.utils";
+import plus from "@/public/svg/plus_bold.svg";
+
 
 const Transfer = () => {
     const [date, setDate] = useState("2024-10-26");
-    const [currency, setCurrency] = useState("USD");
     const [comment, setComment] = useState("");
-    const [amount, setAmount] = useState("");
+    const [addPay, setAddPay] = useState(false)
+    const [firstCurrency, setFirstCurrency] = useState({ moneyType: "USD", amount: 0 });
+        const [secondCurrency, setSecondCurrency] = useState<{ moneyType: string; amount: number } | null>({ moneyType: '', amount: 0 });
+    // const { register, handleSubmit, reset, setValue } = useForm({
+    //     defaultValues: {
+    //         type: "Расходы",
+    //         transactionType: "INCOME",
+    //         transactionDetails: [{
+    //             moneyType: firstCurrency.moneyType,
+    //             amount: firstCurrency.amount,
+    //         }],
+    //         moneyType: "USD",
+    //         serviceTypeId: 1,
+    //         transactionDate: "",
+    //         incomeStatus: '',
+    //         comment: "",
+    //         files: null,
+    //     },
+    // });
+    // console.log();
+    
+    const handleFirstChange = (field: string, value: string | number) => {
+        setFirstCurrency((prev) => ({ ...prev, [field]: value }));
+    };
+    const handleSecondChange = (field: string, value: string | number) => {        
+        setSecondCurrency((prev) => prev ? { ...prev, [field]: value } : { moneyType: '', amount: 0 });        
+    };   
 
     const availableCurrencies = ["USD", "EUR", "UZS"];
     const [transactionDetails] = useState({
@@ -42,11 +71,11 @@ const Transfer = () => {
     });
     const router = useRouter();
 
-    const availableCards = [
-        { id: 1, type: "Uzcard", balance: "1 870.20 UZS", cardNumber: "9860 **** 1467" },
-        { id: 2, type: "Uzcard", balance: "2 340.10 UZS", cardNumber: "1234 **** 5678" },
-        { id: 3, type: "Uzcard", balance: "1 500.00 UZS", cardNumber: "8765 **** 4321" },
-    ];
+    const { data: availableCards } = useQuery({
+        queryKey: ['cards'],
+        queryFn: cardUtils.getCard
+    })
+    const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount },{ moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
 
     const handleCardSelect = (cardNumber: string) => {
         if (modalType === "withdraw") {
@@ -59,6 +88,7 @@ const Transfer = () => {
 
     return (
         <div className="px-[16px] my-[30px]">
+            {/* Back button */}
             <button
                 onClick={() => router.back()}
                 className="flex items-center text-[12px] text-[#303030] mb-5"
@@ -84,9 +114,6 @@ const Transfer = () => {
                     className="w-full h-full max-w-[60px]"
                 />
             </div>
-
-
-
 
             {/* Блок списания */}
             <div
@@ -135,10 +162,7 @@ const Transfer = () => {
                     </div>
                 </div>
             </div>
-
-
-
-
+    {/* Введите сумму */}
             <div className="mt-[20px]">
                 <label className="block text-lg font-bold mb-2 text-[#000]">
                     Введите сумму
@@ -146,14 +170,13 @@ const Transfer = () => {
                 <div className="flex items-center gap-2">
                     <input
                         type="text"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
+                        onChange={(e) => handleFirstChange("amount", e.target.value)}
                         placeholder="Введите сумму"
                         className="w-full px-[10px] py-[16px] bg-[#F5F2FF] rounded-[6px] text-[14px] text-[#000]"
                     />
                     <select
-                        value={currency}
-                        onChange={(e) => setCurrency(e.target.value)}
+                        value={firstCurrency.moneyType}
+                        onChange={(e) => handleFirstChange("moneyType", e.target.value)}
                         className="bg-[#F5F2FF] px-[10px] py-[16px] rounded-[6px] text-[14px] text-[#000]"
                     >
                         {availableCurrencies.map((cur) => (
@@ -164,6 +187,57 @@ const Transfer = () => {
                     </select>
                 </div>
             </div>
+             {/*  Добавить еще button */}
+            <div className="flex justify-end items-center mt-10">
+                    <button
+                        type='button'
+                        onClick={() => setAddPay((e) => !e)}
+                        className="flex items-center gap-2 rounded-lg bg-[#7E49FF] px-3 py-2 text-sm font-bold text-white hover:bg-[#8455fc]"
+                    >
+                        Добавить еще
+                        <Image
+                            src={plus}
+                            width={24}
+                            height={24}
+                            alt="Plus icon"
+                            className="h-5 w-auto"
+                        />
+                    </button>
+                </div>
+                {/*  Добавить еще */}
+                <div className={`${addPay ? 'flex' : 'hidden'} w-full flex-col justify-between items-start space-y-5 mt-10`}>
+                    <div className="w-full flex justify-between items-center">
+                        <p className='text-[20px] font-bold'>Введите сумму</p>
+                        <select                            
+                            onChange={(e) => handleSecondChange("moneyType", e.target.value)}
+                            className="w-[90px] rounded-md text-[20px] font-medium px-2 appearance-none outline-none"
+                            style={{
+                                backgroundImage: "url('/svg/income/USD.svg')",
+                                backgroundRepeat: "no-repeat",
+                                backgroundPosition: "right 12px center",
+                            }}
+                        >
+                            <option value="USD">USD</option>
+                            <option value="UZS">SUM</option>
+                            <option value="EVRO">EVRO</option>
+                        </select>
+                    </div>
+                    <div className="relative w-full">
+                        <input
+                            type="text"
+                            placeholder="Введите сумму"
+                            onChange={(e) => handleSecondChange("amount", Number(e.target.value))}
+                            className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
+                        />
+                        <Image
+                            src={pen}
+                            width={16}
+                            height={16}
+                            alt="Редактировать"
+                            className="absolute right-3 top-[20px] cursor-pointer"
+                        />
+                    </div>
+                </div>
             {/* Выбор даты */}
             <div className="mt-[40px]">
                 <label className="block text-[20px] font-bold mb-2">Введите дату</label>
@@ -225,6 +299,10 @@ const Transfer = () => {
                         <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
                         Сумма транзакции: {transactionDetails.amount}
                     </span>
+                    {secondCurrency?.amount ?  <span className="font-medium flex items-center">
+                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                        Сумма транзакции: {transactionDetailsData[1].amount} <span className='lowercase ml-2'>{transactionDetailsData[1].moneyType}</span>
+                    </span> : ''}
                     <span className="font-medium flex items-center">
                         <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
                         Дата транзакции: {transactionDetails.transactionDate}
@@ -261,7 +339,7 @@ const Transfer = () => {
                 onClose={() => setModalType(null)}
                 onSelect={handleCardSelect}
                 title={modalType === "withdraw" ? "Списать с" : "Зачислить на"}
-                availableCards={availableCards}
+                availableCards={availableCards?.data?.cards}
                 selectedCardNumber={
                     modalType === "withdraw" ? selectedCard.withdraw : selectedCard.deposit
                 }
