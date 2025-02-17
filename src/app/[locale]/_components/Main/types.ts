@@ -63,7 +63,7 @@ export interface transactionTypeOnsubmit {
   transactionDate: string;
   incomeStatus: string;
   comment: string;
-  file?: File | "" | null; 
+  file?: string; 
   fromClientId?: number;
   toCardId?: number;
   fromCardId?: number;
