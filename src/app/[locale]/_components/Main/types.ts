@@ -21,7 +21,7 @@ export interface transactionExpensesType{
   transactionType: "CONSUMPTION"
   fromCardId: number,
   toCategoryConsumptionId: number
-  files: File
+  files: File[] | null
   transactionDate: string | "",
   comment: string,
   transactionDetails: trasactionDetales[]

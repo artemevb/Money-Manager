@@ -13,7 +13,7 @@ type Card = {
 type ModalCardSelectionProps = {
     isOpen: boolean;
     onClose: () => void;
-    onSelect: (cardNumber: string) => void;
+    onSelect: (cardNumber: string, cardId: number, cardType:string) => void;
     title: string;
     availableCards: Card[];
     selectedCardNumber: string; // передаём номер выбранной карты
@@ -41,7 +41,7 @@ const ModalCardSelection: React.FC<ModalCardSelectionProps> = ({
                         return (
                             <li
                                 key={card.id}
-                                onClick={() => onSelect(card.cardNumber)}
+                                onClick={() => onSelect(card.cardNumber, card.id, card.cardType)}
                                 className={`py-[14px] px-[10px] rounded-2xl flex justify-between items-center cursor-pointer ${isSelected
                                     ? "border border-[#7E49FF]"
                                     : "border border-[#F5F2FF]"

@@ -14,72 +14,81 @@ import pen from '@/public/svg/pen.svg';
 import download from '@/public/svg/downloaded_black.svg';
 import document from '@/public/svg/doc.svg';
 import ExpensesCategoryModal from "./ExpensesCategoryModal";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { cardUtils } from "@/src/app/utils/card.utils";
 import plus from "@/public/svg/plus_bold.svg";
+import { transactionUtils } from "@/src/app/utils/transaction.util";
+import toast from "react-hot-toast";
 
 
 const Transfer = () => {
     const [date, setDate] = useState("2024-10-26");
     const [comment, setComment] = useState("");
     const [addPay, setAddPay] = useState(false)
+    const [checkedData, setCheckedData] = useState(false)
+    const [file, setFile] = useState<File[]>([]);
+    const availableCurrencies = ["USD", "EUR", "UZS"];
+    const queryClient = useQueryClient()
+    const router = useRouter();
     const [firstCurrency, setFirstCurrency] = useState({ moneyType: "USD", amount: 0 });
-        const [secondCurrency, setSecondCurrency] = useState<{ moneyType: string; amount: number } | null>({ moneyType: '', amount: 0 });
-    // const { register, handleSubmit, reset, setValue } = useForm({
-    //     defaultValues: {
-    //         type: "Расходы",
-    //         transactionType: "INCOME",
-    //         transactionDetails: [{
-    //             moneyType: firstCurrency.moneyType,
-    //             amount: firstCurrency.amount,
-    //         }],
-    //         moneyType: "USD",
-    //         serviceTypeId: 1,
-    //         transactionDate: "",
-    //         incomeStatus: '',
-    //         comment: "",
-    //         files: null,
-    //     },
-    // });
-    // console.log();
-    
+    const [secondCurrency, setSecondCurrency] = useState<{ moneyType: string; amount: number } | null>({ moneyType: '', amount: 0 });
     const handleFirstChange = (field: string, value: string | number) => {
         setFirstCurrency((prev) => ({ ...prev, [field]: value }));
     };
-    const handleSecondChange = (field: string, value: string | number) => {        
-        setSecondCurrency((prev) => prev ? { ...prev, [field]: value } : { moneyType: '', amount: 0 });        
-    };   
-
-    const availableCurrencies = ["USD", "EUR", "UZS"];
-    const [transactionDetails] = useState({
-        type: "Расходы",
-        currency: "Карта суммы 1",
-        amount: "3.0 сум",
-        transactionDate: "2025-01-09",
-        category: "Реклама",
-        comment: "НЕТ",
-        file: "НЕТ",
-    });
+    const handleSecondChange = (field: string, value: string | number) => {
+        setSecondCurrency((prev) => prev ? { ...prev, [field]: value } : { moneyType: '', amount: 0 });
+    };
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const selectedFiles = Array.from(event.target.files).slice(0, 2); // Faqat 2 ta faylni olish
+            setFile(selectedFiles);
+        }
+    };
 
     const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("Категория расходов");
 
-    const [modalType, setModalType] = useState<"withdraw" | "deposit" | null>(null);
+    const [modalType, setModalType] = useState<"withdraw" | "deposit" | "id" | "cardType" | null>(null);
     const [selectedCard, setSelectedCard] = useState({
         withdraw: "9860 **** 1467",
         deposit: "Категория расходов ",
+        id:0,
+        cardType:"HUMO"
     });
-    const router = useRouter();
+    
 
     const { data: availableCards } = useQuery({
         queryKey: ['cards'],
         queryFn: cardUtils.getCard
     })
-    const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount },{ moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
+    const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }, { moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
 
-    const handleCardSelect = (cardNumber: string) => {
+    const expensesMutate = useMutation({
+        mutationFn: transactionUtils.postMoving,
+        onSuccess: () => {
+            toast.success('Succes new moving')
+            queryClient.invalidateQueries({ queryKey: ['transactios'] })
+        },
+        onError: (err) => {
+            console.log(err);
+            toast.error('Something went wrong')
+        }
+    })
+    
+    const handleExpenses = () => {
+        expensesMutate.mutate({
+            transactionType: "CONSUMPTION",
+            fromCardId: 1,
+            toCategoryConsumptionId: 1,
+            files: file.length ? file : null,
+            transactionDate: date,
+            comment: comment,
+            transactionDetails: transactionDetailsData,
+        })
+    }
+    const handleCardSelect = (cardNumber: string, cardId:number, cardType:string) => {
         if (modalType === "withdraw") {
-            setSelectedCard((prev) => ({ ...prev, withdraw: cardNumber }));
+            setSelectedCard((prev) => ({ ...prev, withdraw: cardNumber,cardType:cardType, id: cardId }));
         } else if (modalType === "deposit") {
             setSelectedCard((prev) => ({ ...prev, deposit: cardNumber }));
         }
@@ -162,7 +171,7 @@ const Transfer = () => {
                     </div>
                 </div>
             </div>
-    {/* Введите сумму */}
+            {/* Введите сумму */}
             <div className="mt-[20px]">
                 <label className="block text-lg font-bold mb-2 text-[#000]">
                     Введите сумму
@@ -187,57 +196,57 @@ const Transfer = () => {
                     </select>
                 </div>
             </div>
-             {/*  Добавить еще button */}
+            {/*  Добавить еще button */}
             <div className="flex justify-end items-center mt-10">
-                    <button
-                        type='button'
-                        onClick={() => setAddPay((e) => !e)}
-                        className="flex items-center gap-2 rounded-lg bg-[#7E49FF] px-3 py-2 text-sm font-bold text-white hover:bg-[#8455fc]"
+                <button
+                    type='button'
+                    onClick={() => setAddPay((e) => !e)}
+                    className="flex items-center gap-2 rounded-lg bg-[#7E49FF] px-3 py-2 text-sm font-bold text-white hover:bg-[#8455fc]"
+                >
+                    Добавить еще
+                    <Image
+                        src={plus}
+                        width={24}
+                        height={24}
+                        alt="Plus icon"
+                        className="h-5 w-auto"
+                    />
+                </button>
+            </div>
+            {/*  Добавить еще */}
+            <div className={`${addPay ? 'flex' : 'hidden'} w-full flex-col justify-between items-start space-y-5 mt-10`}>
+                <div className="w-full flex justify-between items-center">
+                    <p className='text-[20px] font-bold'>Введите сумму</p>
+                    <select
+                        onChange={(e) => handleSecondChange("moneyType", e.target.value)}
+                        className="w-[90px] rounded-md text-[20px] font-medium px-2 appearance-none outline-none"
+                        style={{
+                            backgroundImage: "url('/svg/income/USD.svg')",
+                            backgroundRepeat: "no-repeat",
+                            backgroundPosition: "right 12px center",
+                        }}
                     >
-                        Добавить еще
-                        <Image
-                            src={plus}
-                            width={24}
-                            height={24}
-                            alt="Plus icon"
-                            className="h-5 w-auto"
-                        />
-                    </button>
+                        <option value="USD">USD</option>
+                        <option value="UZS">SUM</option>
+                        <option value="EVRO">EVRO</option>
+                    </select>
                 </div>
-                {/*  Добавить еще */}
-                <div className={`${addPay ? 'flex' : 'hidden'} w-full flex-col justify-between items-start space-y-5 mt-10`}>
-                    <div className="w-full flex justify-between items-center">
-                        <p className='text-[20px] font-bold'>Введите сумму</p>
-                        <select                            
-                            onChange={(e) => handleSecondChange("moneyType", e.target.value)}
-                            className="w-[90px] rounded-md text-[20px] font-medium px-2 appearance-none outline-none"
-                            style={{
-                                backgroundImage: "url('/svg/income/USD.svg')",
-                                backgroundRepeat: "no-repeat",
-                                backgroundPosition: "right 12px center",
-                            }}
-                        >
-                            <option value="USD">USD</option>
-                            <option value="UZS">SUM</option>
-                            <option value="EVRO">EVRO</option>
-                        </select>
-                    </div>
-                    <div className="relative w-full">
-                        <input
-                            type="text"
-                            placeholder="Введите сумму"
-                            onChange={(e) => handleSecondChange("amount", Number(e.target.value))}
-                            className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
-                        />
-                        <Image
-                            src={pen}
-                            width={16}
-                            height={16}
-                            alt="Редактировать"
-                            className="absolute right-3 top-[20px] cursor-pointer"
-                        />
-                    </div>
+                <div className="relative w-full">
+                    <input
+                        type="text"
+                        placeholder="Введите сумму"
+                        onChange={(e) => handleSecondChange("amount", Number(e.target.value))}
+                        className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
+                    />
+                    <Image
+                        src={pen}
+                        width={16}
+                        height={16}
+                        alt="Редактировать"
+                        className="absolute right-3 top-[20px] cursor-pointer"
+                    />
                 </div>
+            </div>
             {/* Выбор даты */}
             <div className="mt-[40px]">
                 <label className="block text-[20px] font-bold mb-2">Введите дату</label>
@@ -250,7 +259,7 @@ const Transfer = () => {
                     </button>
                     <input
                         type="date"
-                        value={date}
+                        defaultValue={date}
                         onChange={(e) => setDate(e.target.value)}
                         className="w-full px-[10px] py-[16px] bg-[#F5F2FF] rounded-[6px] text-[14px]"
                     />
@@ -273,62 +282,66 @@ const Transfer = () => {
 
 
             {/* Секция загрузки файла */}
-            <div className="flex items-center justify-between w-full px-[10px] py-[16px] bg-[#F5F2FF] rounded-[6px] text-[14px] mt-[40px]">
+            <label className="flex items-center relative justify-between cursor-pointer w-full px-[10px] py-[16px] bg-[#F5F2FF] rounded-[6px] text-[14px] mt-[40px]">
                 <div className="flex items-center gap-2">
                     <Image src={document} alt="Document Icon" width={16} height={16} />
                     <span className="text-[#000] font-medium">Загрузка файла</span>
                 </div>
+                <input type="file" onChange={handleFileChange} accept=".png, .jpg, .jpeg .pdf .xlsx .doc .docx" className="w-full opacity-0 top-0 right-0 p-2 absolute h-full cursor-pointer" />
                 <Image src={download} alt="Download Icon" width={16} height={16} />
-            </div>
-            <button className="w-full bg-[#7E49FF] text-white py-3 px-[16px] mt-10 rounded-md text-[16px] font-bold hover:bg-purple-600 transition">
+            </label>
+
+            <button onClick={()=>setCheckedData(true)} className="w-full bg-[#7E49FF] text-white py-3 px-[16px] mt-10 rounded-md text-[16px] font-bold hover:bg-purple-600 transition">
                 Сохранить все
             </button>
             {/* Секция транзакции */}
-            <div className="p-5 border border-[#F5F2FF] rounded-2xl shadow-transfer space-y-4 mt-[40px]">
-                <div className="text-2xl font-bold">Транзакция</div>
-                <div className="flex flex-col gap-2">
-                    <span className="font-medium flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Тип транзакции: {transactionDetails.type}
-                    </span>
-                    <span className="font-medium flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Валюта: {transactionDetails.currency}
-                    </span>
-                    <span className="font-medium flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Сумма транзакции: {transactionDetails.amount}
-                    </span>
-                    {secondCurrency?.amount ?  <span className="font-medium flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Сумма транзакции: {transactionDetailsData[1].amount} <span className='lowercase ml-2'>{transactionDetailsData[1].moneyType}</span>
-                    </span> : ''}
-                    <span className="font-medium flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Дата транзакции: {transactionDetails.transactionDate}
-                    </span>
-                    <span className="font-medium flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Файл транзакции: {transactionDetails.file}
-                    </span>
-                    <span className="font-medium flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Категория расхода: {transactionDetails.category}
-                    </span>
-                    <span className="font-medium flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                        Комментарий: {transactionDetails.comment}
-                    </span>
+            {checkedData && <>
+                <div className="p-5 border border-[#F5F2FF] rounded-2xl shadow-transfer space-y-4 mt-[40px]">
+                    <div className="text-2xl font-bold">Транзакция</div>
+                    <div className="flex flex-col gap-2">
+                        <span className="font-medium flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                            Тип транзакции: Расходы
+                        </span>
+                        <span className="font-medium flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                            Валюта: {transactionDetailsData[0].moneyType}
+                        </span>
+                        <span className="font-medium flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                            Сумма транзакции: {transactionDetailsData[0].amount} {transactionDetailsData[0].moneyType}
+                        </span>
+                        {secondCurrency?.amount ? <span className="font-medium flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                            Сумма транзакции: {transactionDetailsData[1].amount} <span className='lowercase ml-2'>{transactionDetailsData[1].moneyType}</span>
+                        </span> : ''}
+                        <span className="font-medium flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                            Дата транзакции: {date ? date : "НЕТ"}
+                        </span>
+                        <span className="font-medium flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                            Файл транзакции: {file ? file[0].name : "НЕТ"}
+                        </span>
+                        <span className="font-medium flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                            Категория расхода: НЕТ
+                        </span>
+                        <span className="font-medium flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
+                            Комментарий: {comment ? comment : "НЕТ"}
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <div className="flex gap-2 mt-10 font-bold">
-                <button className="px-[19.5px] py-3 text-[#7E49FF] rounded-lg bg-[#ECE8FF] w-full text-[16px]">
-                    Редактировать
-                </button>
-                <button className="px-[37.5px] py-3 bg-[#7E49FF] text-white rounded-lg hover:bg-purple-700 w-full text-[16px]">
-                    Сохранить
-                </button>
-            </div>
+                <div className="flex gap-2 mt-10 font-bold">
+                    <button className="px-[19.5px] py-3 text-[#7E49FF] rounded-lg bg-[#ECE8FF] w-full text-[16px]">
+                        Редактировать
+                    </button>
+                    <button type="button" onClick={handleExpenses} className="px-[37.5px] py-3 bg-[#7E49FF] text-white rounded-lg hover:bg-purple-700 w-full text-[16px]">
+                        Сохранить
+                    </button>
+                </div>
+            </>}
             <ExpensesCategoryModal
                 isOpen={isCategoryModalOpen}
                 onClose={() => setCategoryModalOpen(false)}
