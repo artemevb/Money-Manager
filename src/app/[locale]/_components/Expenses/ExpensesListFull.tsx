@@ -45,22 +45,27 @@ const Transfer = () => {
         }
     };
 
-    const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState("Категория расходов");
-
-    const [modalType, setModalType] = useState<"withdraw" | "deposit" | "id" | "cardType" | null>(null);
-    const [selectedCard, setSelectedCard] = useState({
-        withdraw: "9860 **** 1467",
-        deposit: "Категория расходов ",
-        id:0,
-        cardType:"HUMO"
-    });
-    
-
     const { data: availableCards } = useQuery({
         queryKey: ['cards'],
         queryFn: cardUtils.getCard
     })
+    
+
+    const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState({
+        name: "Категория расходов",
+        id: 0
+    });
+
+    const [modalType, setModalType] = useState<"withdraw" | "deposit" | "id" | "cardType" | null>(null);
+    const [selectedCard, setSelectedCard] = useState({
+        withdraw: availableCards?.data?.cards?.length && availableCards?.data?.cards[0]?.cardNumber,
+        deposit: "Категория расходов ",
+        id: availableCards?.data?.cards?.length &&  availableCards?.data?.cards[0]?.id,
+        cardType: availableCards?.data?.cards?.length &&  availableCards?.data?.cards[0]?.cardType
+    });    
+
+   
     const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }, { moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
 
     const expensesMutate = useMutation({
@@ -78,8 +83,8 @@ const Transfer = () => {
     const handleExpenses = () => {
         expensesMutate.mutate({
             transactionType: "CONSUMPTION",
-            fromCardId: 1,
-            toCategoryConsumptionId: 1,
+            fromCardId: selectedCard.id,
+            toCategoryConsumptionId: selectedCategory.id,
             files: file.length ? file : null,
             transactionDate: date,
             comment: comment,
@@ -94,7 +99,6 @@ const Transfer = () => {
         }
         setModalType(null);
     };
-
     return (
         <div className="px-[16px] my-[30px]">
             {/* Back button */}
@@ -137,7 +141,7 @@ const Transfer = () => {
                         </div>
                         <div>
                             <div className="text-sm text-[#7E49FF] font-medium">Списать с</div>
-                            <div className="text-[#303030] text-[12px]">Uzcard</div>
+                            <div className="text-[#303030] text-[12px]">{selectedCard?.cardType}</div>
                             <div className="text-[16px] font-semibold text-[#303030] whitespace-nowrap">
                                 {selectedCard.withdraw}
                             </div>
@@ -167,7 +171,7 @@ const Transfer = () => {
                     </div>
                     <div className="flex flex-col items-start">
                         <div className="text-sm text-[#7E49FF] font-medium">Куда</div>
-                        <span className="text-[#303030] text-[12px]">{selectedCategory}</span>
+                        <span className="text-[#303030] text-[12px]">{selectedCategory.name}</span>
                     </div>
                 </div>
             </div>
@@ -280,14 +284,13 @@ const Transfer = () => {
                 <Image src={pen} alt="Pen Icon" width={16} height={16} className="bottom-[35px] ml-auto right-[10px] relative" />
             </div>
 
-
             {/* Секция загрузки файла */}
             <label className="flex items-center relative justify-between cursor-pointer w-full px-[10px] py-[16px] bg-[#F5F2FF] rounded-[6px] text-[14px] mt-[40px]">
                 <div className="flex items-center gap-2">
                     <Image src={document} alt="Document Icon" width={16} height={16} />
                     <span className="text-[#000] font-medium">Загрузка файла</span>
                 </div>
-                <input type="file" onChange={handleFileChange} accept=".png, .jpg, .jpeg .pdf .xlsx .doc .docx" className="w-full opacity-0 top-0 right-0 p-2 absolute h-full cursor-pointer" />
+                <input type="file" onChange={handleFileChange} accept=".png, .jpg, .jpeg .pdf .xlsx .doc .docx" className="w-full opacity-0 top-0 right-0 p-2 absolute h-full cursor-pointer" multiple/>
                 <Image src={download} alt="Download Icon" width={16} height={16} />
             </label>
 
@@ -321,7 +324,7 @@ const Transfer = () => {
                         </span>
                         <span className="font-medium flex items-center">
                             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                            Файл транзакции: {file ? file[0].name : "НЕТ"}
+                            Файл транзакции: {file.length ? file[0]?.name : "НЕТ"}
                         </span>
                         <span className="font-medium flex items-center">
                             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
@@ -345,7 +348,7 @@ const Transfer = () => {
             <ExpensesCategoryModal
                 isOpen={isCategoryModalOpen}
                 onClose={() => setCategoryModalOpen(false)}
-                onSelect={(category) => setSelectedCategory(category)}
+                onSelect={(name:string, id:number) => setSelectedCategory({name,id})}
             />
             <ModalCardSelection
                 isOpen={!!modalType}

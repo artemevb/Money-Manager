@@ -1,24 +1,20 @@
+'use client'
 import React, { useState } from "react";
 import close from "@/public/svg/close.svg";
 import Image from "next/image";
 import pen from '@/public/svg/pen.svg';
+import { useQuery } from "@tanstack/react-query";
+import { categoryUtils } from "@/src/app/utils/category";
 
 interface ExpensesCategoryModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSelect: (category: string) => void;
+    onSelect: (name: string, id: number) => void;
 }
-
-const categories = [
-    "ЗП (зарплата)",
-    "Дивиденды",
-    "Реклама",
-    "Хоз. расходы",
-    "Услуги",
-    "Профсоюз",
-    "Фонд развития",
-    "Комиссионные",
-];
+interface categoryType {
+    name: string,
+    id: number
+}
 
 const ExpensesCategoryModal: React.FC<ExpensesCategoryModalProps> = ({
     isOpen,
@@ -26,15 +22,17 @@ const ExpensesCategoryModal: React.FC<ExpensesCategoryModalProps> = ({
     onSelect,
 }) => {
     const [otherCategory, setOtherCategory] = useState("");
+    const { data: categories } = useQuery({
+        queryKey: ['categorys'],
+        queryFn: categoryUtils.getCategory
+    })
+console.log(categories);
 
     if (!isOpen) return null;
-
     const handleSave = () => {
-        if (otherCategory.trim()) {
-            onSelect(otherCategory.trim());
-        }
         onClose();
     };
+    
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50 h-full">
@@ -49,18 +47,18 @@ const ExpensesCategoryModal: React.FC<ExpensesCategoryModalProps> = ({
                 <h2 className="text-xl font-semibold mb-4 mt-10 text-left">Категория расходов </h2>
                 {/* Список категорий */}
                 <div className="grid grid-cols-2 gap-x-[8px] gap-y-[16px] mb-6">
-                    {categories.map((category) => (
+                    {categories?.data?.length && categories?.data?.map((el: categoryType) => (
                         <button
-                            key={category}
+                            key={el.id}
                             onClick={() => {
-                                onSelect(category);
+                                onSelect(el.name, el.id);
                                 onClose();
                             }}
                             className=" text-sm py-3 px-5 rounded-2xl text-[#303030] font-medium shadow-transfer border border-[#F5F2FF]"
                         >
                             <div className="flex flex-col w-full items-start gap-[8px]">
                                 <span className="text-[#7E49FF] font-medium text-[14px]">Куда</span>
-                                <span className="text-[14px] font-medium text-[#000]">{category}</span>
+                                <span className="text-[14px] font-medium text-[#000]">{el.name}</span>
                             </div>
                         </button>
                     ))}
