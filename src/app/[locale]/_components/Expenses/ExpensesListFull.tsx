@@ -69,7 +69,7 @@ const Transfer = () => {
     const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }, { moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
 
     const expensesMutate = useMutation({
-        mutationFn: transactionUtils.postMoving,
+        mutationFn: transactionUtils.postConsumption,
         onSuccess: () => {
             toast.success('Succes new moving')
             queryClient.invalidateQueries({ queryKey: ['transactios'] })

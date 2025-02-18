@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import close from "@/public/svg/close.svg";
 import Image from "next/image";
 import pen from '@/public/svg/pen.svg';
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { categoryUtils } from "@/src/app/utils/category";
+import toast from "react-hot-toast";
 
 interface ExpensesCategoryModalProps {
     isOpen: boolean;
@@ -26,13 +27,26 @@ const ExpensesCategoryModal: React.FC<ExpensesCategoryModalProps> = ({
         queryKey: ['categorys'],
         queryFn: categoryUtils.getCategory
     })
-console.log(categories);
+    const queryClient = useQueryClient()
+    const categoryAdd = useMutation({
+        mutationFn: categoryUtils.postCategory,
+        onSuccess: () => {
+            toast.success('Success new category')
+            queryClient.invalidateQueries({queryKey:['categorys']})
+            setOtherCategory('')
+        },
+        onError: (err) => {
+            console.log(err);            
+            toast.error('Something went wrong!')
+        }
+    })
+    const handleAddCategory = () => {
+        categoryAdd.mutate({
+            name: otherCategory
+        })
+    }
 
-    if (!isOpen) return null;
-    const handleSave = () => {
-        onClose();
-    };
-    
+    if (!isOpen) return null;    
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50 h-full">
@@ -78,7 +92,8 @@ console.log(categories);
 
                 {/* Кнопка сохранения */}
                 <button
-                    onClick={handleSave}
+                    onClick={handleAddCategory}
+                    disabled={!otherCategory?true:false}
                     className="w-full py-3 bg-[#7E49FF] text-white rounded-lg text-sm font-bold hover:bg-purple-600 transition"
                 >
                     Сохранить

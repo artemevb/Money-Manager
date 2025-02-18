@@ -42,6 +42,16 @@ export interface incomeTrancaptionType{
   fromClientId: number,
 }
 
+export interface transactionMoving{
+  transactionType: 'MOVING',
+  fromCardId: number,
+  toCardId: number,
+  transactionDetails: trasactionDetales[]
+  files?: File  | null
+  comment: string,
+  transactionDate: string,
+}
+
 export interface clietnType{
   firstName: string,
   lastName: string,

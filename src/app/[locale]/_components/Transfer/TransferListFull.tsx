@@ -14,13 +14,18 @@ import ModalCardSelection from "./ModalCardSelection";
 import pen from '@/public/svg/pen.svg';
 import download from '@/public/svg/downloaded_black.svg';
 import document from '@/public/svg/doc.svg';
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { cardUtils } from "@/src/app/utils/card.utils";
+import { transactionUtils } from "@/src/app/utils/transaction.util";
+import toast from "react-hot-toast";
 
 const Transfer = () => {
   const [date, setDate] = useState("2024-10-26");
-      const [addPay, setAddPay] = useState(false)
+  const [addPay, setAddPay] = useState(false)
   const [comment, setComment] = useState("");
-      const [firstCurrency, setFirstCurrency] = useState({ moneyType: "USD", amount: 0 });
-      const [secondCurrency, setSecondCurrency] = useState<{ moneyType: string; amount: number } | null>({ moneyType: '', amount: 0 });
+  const [checkedData, setCheckedData] = useState(false)
+  const [firstCurrency, setFirstCurrency] = useState({ moneyType: "USD", amount: 0 });
+  const [secondCurrency, setSecondCurrency] = useState<{ moneyType: string; amount: number } | null>({ moneyType: '', amount: 0 });
   const [transactionDetails] = useState({
     type: "Перемещение",
     currency: "Карта суммы 1",
@@ -36,21 +41,42 @@ const Transfer = () => {
     deposit: "Выберите карту",
   });
   const router = useRouter();
-  const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount },{ moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
+  const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }, { moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
   console.log(transactionDetailsData);
-  
-  const availableCards = [
-    { id: 1, type: "Uzcard", balance: "1 870.20 UZS", cardNumber: "9860 **** 1467" },
-    { id: 2, type: "Uzcard", balance: "2 340.10 UZS", cardNumber: "1234 **** 5678" },
-    { id: 3, type: "Uzcard", balance: "1 500.00 UZS", cardNumber: "8765 **** 4321" },
-  ];
+
+  const {data:availableCards} = useQuery({
+    queryKey:['cards'],
+    queryFn:cardUtils.getCard
+  })
   const handleFirstChange = (field: string, value: string | number) => {
     setFirstCurrency((prev) => ({ ...prev, [field]: value }));
-};
+  };
 
-const handleSecondChange = (field: string, value: string | number) => {        
-    setSecondCurrency((prev) => prev ? { ...prev, [field]: value } : { moneyType: '', amount: 0 });        
-};    
+  const handleSecondChange = (field: string, value: string | number) => {
+    setSecondCurrency((prev) => prev ? { ...prev, [field]: value } : { moneyType: '', amount: 0 });
+  };
+
+  const addMOving = useMutation({
+    mutationFn: transactionUtils.postMoving,
+    onSuccess: () => {
+      toast.success('Success a new moving')
+    },
+    onError: (err) => {
+      toast.error('Error')
+      console.log(err);      
+    }
+  })
+
+  const handelAddMoving = () => {
+    addMOving.mutate({
+      comment:comment,
+      fromCardId:1,
+      toCardId:2,
+      transactionDate:date,
+      transactionDetails:[],
+      transactionType:'MOVING'
+    })
+  }
 
   const handleCardSelect = (cardNumber: string) => {
     if (modalType === "withdraw") {
@@ -87,7 +113,7 @@ const handleSecondChange = (field: string, value: string | number) => {
           alt="close"
           className="w-full h-full max-w-[60px]"
         />
-      </div>     
+      </div>
 
       {/* Блок списания */}
       <div
@@ -138,92 +164,92 @@ const handleSecondChange = (field: string, value: string | number) => {
       </div>
 
       <div className="w-full flex flex-col justify-between items-start space-y-5 mt-10">
-                    <div className="w-full flex justify-between items-center">
-                        <p className='text-[20px] font-bold'>Введите сумму</p>
-                        <select
-                            defaultValue={firstCurrency.moneyType}
-                            onChange={(e) => handleFirstChange("moneyType", e.target.value)}
-                            className="w-[90px] rounded-md text-[20px] font-medium px-2 appearance-none outline-none"
-                            style={{
-                                backgroundImage: "url('/svg/income/USD.svg')",
-                                backgroundRepeat: "no-repeat",
-                                backgroundPosition: "right 12px center",
-                            }}
-                        >
-                            <option value="USD">USD</option>
-                            <option value="UZS">SUM</option>
-                            <option value="EVRO">EVRO</option>
-                        </select>
-                    </div>
-                    <div className="relative w-full">
-                        <input
-                            type="tel"
-                            onChange={(e) => handleFirstChange("amount", Number(e.target.value))}
-                            required
-                            placeholder="Введите сумму"
-                            className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
-                        />
-                        <Image
-                            src={pen}
-                            width={16}
-                            height={16}
-                            alt="Редактировать"
-                            className="absolute right-3 top-[20px] cursor-pointer"
-                        />
-                    </div>
-                </div>
+        <div className="w-full flex justify-between items-center">
+          <p className='text-[20px] font-bold'>Введите сумму</p>
+          <select
+            defaultValue={firstCurrency.moneyType}
+            onChange={(e) => handleFirstChange("moneyType", e.target.value)}
+            className="w-[90px] rounded-md text-[20px] font-medium px-2 appearance-none outline-none"
+            style={{
+              backgroundImage: "url('/svg/income/USD.svg')",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 12px center",
+            }}
+          >
+            <option value="USD">USD</option>
+            <option value="UZS">SUM</option>
+            <option value="EVRO">EVRO</option>
+          </select>
+        </div>
+        <div className="relative w-full">
+          <input
+            type="tel"
+            onChange={(e) => handleFirstChange("amount", Number(e.target.value))}
+            required
+            placeholder="Введите сумму"
+            className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
+          />
+          <Image
+            src={pen}
+            width={16}
+            height={16}
+            alt="Редактировать"
+            className="absolute right-3 top-[20px] cursor-pointer"
+          />
+        </div>
+      </div>
 
-                {/*  Добавить еще button */}
-                <div className="flex justify-end items-center mt-10">
-                    <button
-                        type='button'
-                        onClick={() => setAddPay((e) => !e)}
-                        className="flex items-center gap-2 rounded-lg bg-[#7E49FF] px-3 py-2 text-sm font-bold text-white hover:bg-[#8455fc]"
-                    >
-                        Добавить еще
-                        <Image
-                            src={plus}
-                            width={24}
-                            height={24}
-                            alt="Plus icon"
-                            className="h-5 w-auto"
-                        />
-                    </button>
-                </div>
-                {/*  Добавить еще */}
-                <div className={`${addPay ? 'flex' : 'hidden'} w-full flex-col justify-between items-start space-y-5 mt-10`}>
-                    <div className="w-full flex justify-between items-center">
-                        <p className='text-[20px] font-bold'>Введите сумму</p>
-                        <select                            
-                            onChange={(e) => handleSecondChange("moneyType", e.target.value)}
-                            className="w-[90px] rounded-md text-[20px] font-medium px-2 appearance-none outline-none"
-                            style={{
-                                backgroundImage: "url('/svg/income/USD.svg')",
-                                backgroundRepeat: "no-repeat",
-                                backgroundPosition: "right 12px center",
-                            }}
-                        >
-                            <option value="USD">USD</option>
-                            <option value="UZS">SUM</option>
-                            <option value="EVRO">EVRO</option>
-                        </select>
-                    </div>
-                    <div className="relative w-full">
-                        <input
-                            type="text"
-                            placeholder="Введите сумму"
-                            onChange={(e) => handleSecondChange("amount", Number(e.target.value))}
-                            className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
-                        />
-                        <Image
-                            src={pen}
-                            width={16}
-                            height={16}
-                            alt="Редактировать"
-                            className="absolute right-3 top-[20px] cursor-pointer"
-                        />
-                    </div>
-                </div>
+      {/*  Добавить еще button */}
+      <div className="flex justify-end items-center mt-10">
+        <button
+          type='button'
+          onClick={() => setAddPay((e) => !e)}
+          className="flex items-center gap-2 rounded-lg bg-[#7E49FF] px-3 py-2 text-sm font-bold text-white hover:bg-[#8455fc]"
+        >
+          Добавить еще
+          <Image
+            src={plus}
+            width={24}
+            height={24}
+            alt="Plus icon"
+            className="h-5 w-auto"
+          />
+        </button>
+      </div>
+      {/*  Добавить еще */}
+      <div className={`${addPay ? 'flex' : 'hidden'} w-full flex-col justify-between items-start space-y-5 mt-10`}>
+        <div className="w-full flex justify-between items-center">
+          <p className='text-[20px] font-bold'>Введите сумму</p>
+          <select
+            onChange={(e) => handleSecondChange("moneyType", e.target.value)}
+            className="w-[90px] rounded-md text-[20px] font-medium px-2 appearance-none outline-none"
+            style={{
+              backgroundImage: "url('/svg/income/USD.svg')",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 12px center",
+            }}
+          >
+            <option value="USD">USD</option>
+            <option value="UZS">SUM</option>
+            <option value="EVRO">EVRO</option>
+          </select>
+        </div>
+        <div className="relative w-full">
+          <input
+            type="text"
+            placeholder="Введите сумму"
+            onChange={(e) => handleSecondChange("amount", Number(e.target.value))}
+            className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
+          />
+          <Image
+            src={pen}
+            width={16}
+            height={16}
+            alt="Редактировать"
+            className="absolute right-3 top-[20px] cursor-pointer"
+          />
+        </div>
+      </div>
 
       {/* Выбор даты */}
       <div className="mt-[40px]">
@@ -267,11 +293,12 @@ const handleSecondChange = (field: string, value: string | number) => {
         </div>
         <Image src={download} alt="Download Icon" width={16} height={16} />
       </div>
-      <button className="w-full bg-[#7E49FF] text-white py-3 px-[16px] mt-10 rounded-md text-[16px] font-bold hover:bg-purple-600 transition">
+      <button onClick={() => setCheckedData(true)} className="w-full bg-[#7E49FF] text-white py-3 px-[16px] mt-10 rounded-md text-[16px] font-bold hover:bg-purple-600 transition">
         Сохранить все
       </button>
       {/* Секция транзакции */}
-      <div className="p-5 border border-[#F5F2FF] rounded-2xl shadow-transfer space-y-4 mt-[40px]">
+      {checkedData && <>
+        <div className="p-5 border border-[#F5F2FF] rounded-2xl shadow-transfer space-y-4 mt-[40px]">
         <div className="text-2xl font-bold">Транзакция</div>
         <div className="flex flex-col gap-2">
           <span className="font-medium flex items-center">
@@ -299,22 +326,24 @@ const handleSecondChange = (field: string, value: string | number) => {
             Файл транзакции: {transactionDetails.file}
           </span>
         </div>
-
       </div>
       <div className="flex gap-2 mt-10 font-bold">
         <button className="px-[19.5px] py-3 text-[#7E49FF] rounded-lg bg-[#ECE8FF] w-full text-[16px]">
           Редактировать
         </button>
-        <button className="px-[37.5px] py-3 bg-[#7E49FF] text-white rounded-lg hover:bg-purple-700 w-full text-[16px]">
+        <button onClick={handelAddMoving} type="button" className="px-[37.5px] py-3 bg-[#7E49FF] text-white rounded-lg hover:bg-purple-700 w-full text-[16px]">
           Сохранить
         </button>
       </div>
+      </>}
+      
+      
       <ModalCardSelection
         isOpen={!!modalType}
         onClose={() => setModalType(null)}
         onSelect={handleCardSelect}
         title={modalType === "withdraw" ? "Списать с" : "Зачислить на"}
-        availableCards={availableCards}
+        availableCards={availableCards?.data?.cards}
         selectedCardNumber={
           modalType === "withdraw" ? selectedCard.withdraw : selectedCard.deposit
         }

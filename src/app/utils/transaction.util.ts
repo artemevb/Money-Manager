@@ -1,4 +1,4 @@
-import { incomeTrancaptionType, transactionExpensesType } from "../[locale]/_components/Main/types"
+import { incomeTrancaptionType, transactionExpensesType, transactionMoving } from "../[locale]/_components/Main/types"
 import { customAxios } from "../configs"
 
 export const transactionUtils = {
@@ -29,7 +29,7 @@ export const transactionUtils = {
     
         return data;
     },
-    postMoving: async ({comment,files,transactionType,fromCardId,transactionDate,transactionDetails,toCategoryConsumptionId}: transactionExpensesType) => {
+    postConsumption: async ({comment,files,transactionType,fromCardId,transactionDate,transactionDetails,toCategoryConsumptionId}: transactionExpensesType) => {
         const formData = new FormData();
     
         if(files?.length){
@@ -52,4 +52,19 @@ export const transactionUtils = {
         })
         return data
     },
+    postMoving: async ({transactionType,fromCardId,toCardId,transactionDate,transactionDetails,comment,files}:transactionMoving) => {
+        const formData = new FormData();
+    
+        if(files){
+            formData.append('files', files);  
+        }
+        formData.append('comment', comment);
+        formData.append('fromCardId', fromCardId.toString());
+        formData.append('toCardId', toCardId.toString());
+        formData.append('transactionDate', transactionDate);
+        formData.append('transactionType', transactionType);    
+        formData.append('transactionDetails', JSON.stringify(transactionDetails)); 
+        const {data} = await customAxios.post('api/transaction', formData)
+        return data
+    }
 }
