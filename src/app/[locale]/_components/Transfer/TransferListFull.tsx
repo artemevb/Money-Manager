@@ -22,16 +22,7 @@ const Transfer = () => {
   const [date, setDate] = useState("2024-10-26");
   const [comment, setComment] = useState("");
   const [checkedData, setCheckedData] = useState(false)
-  const [firstCurrency, setFirstCurrency] = useState({ moneyType: "UZS", amount: 0 });
-  const [transactionDetails] = useState({
-    type: "Перемещение",
-    currency: "Карта суммы 1",
-    amount: "3.0 сум",
-    transactionDate: "2025-01-09",
-    comment: "НЕТ",
-    file: "НЕТ",
-  });
-
+  const [file, setFile] = useState<File[]>([]);
   const [modalType, setModalType] = useState<"withdraw" | "deposit" | null>(null);
   const [selectedCard, setSelectedCard] = useState({
     withdraw: "9860 **** 1467",
@@ -40,12 +31,24 @@ const Transfer = () => {
     cardType: "HUMO",
     monayType: "UZS"
   });
+  const [selectFromCard, setSelectFromCard] = useState({
+    deposit: "9860 **** 1467",
+    cardId: 0,
+    cardType: "HUMO",
+    monayType: "UZS"
+  });
   const router = useRouter();
-
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+        const selectedFiles = Array.from(event.target.files)?.slice(0, 2); // Faqat 2 ta faylni olish
+        setFile(selectedFiles);
+    }
+};
   const {data:availableCards} = useQuery({
     queryKey:['cards'],
     queryFn:cardUtils.getCard
   })
+  const [firstCurrency, setFirstCurrency] = useState< {moneyType: null | string, amount:number}>({ moneyType: null, amount: 0 });
   const handleFirstChange = (field: string, value: string | number) => {
     setFirstCurrency((prev) => ({ ...prev, [field]: value }));
   };
@@ -65,18 +68,20 @@ const Transfer = () => {
     addMOving.mutate({
       transactionType:'MOVING',
       transactionDetails:[firstCurrency],
-      fromCardId: 1,
-      toCardId: 2,
+      fromCardId: selectedCard.cardId,
+      toCardId: selectFromCard.cardId,
       transactionDate:date,
       comment:comment,
+      files: file.length ? file : null,
     })
+    console.log(addMOving.variables);    
   }
 
   const handleCardSelect = (cardNumber: string, cardId: number, cardType:string, monayType:string) => {
     if (modalType === "withdraw") {
       setSelectedCard((prev) => ({ ...prev, withdraw: cardNumber, cardId:cardId, cardType:cardType, monayType:monayType }));
     } else if (modalType === "deposit") {
-      setSelectedCard((prev) => ({ ...prev, deposit: cardNumber }));
+      setSelectFromCard((prev) => ({ ...prev, deposit: cardNumber, cardId:cardId, cardType:cardType, monayType:monayType }));
     }
     setModalType(null);
   };
@@ -122,9 +127,9 @@ const Transfer = () => {
             </div>
             <div>
               <div className="text-sm text-[#7E49FF] font-medium">Списать с</div>
-              <div className="text-[#303030] text-[12px]">Uzcard</div>
+              <div className="text-[#303030] text-[12px]">{selectedCard.cardType}</div>
               <div className="text-[16px] font-semibold text-[#303030] whitespace-nowrap">
-                {selectedCard.withdraw}
+                {selectedCard.withdraw?.slice(0, 4) + '*'?.repeat(selectedCard.withdraw?.length - 8) + selectedCard.withdraw?.slice(-4)}            
               </div>
             </div>
           </div>
@@ -152,10 +157,12 @@ const Transfer = () => {
           </div>
           <div className="flex flex-col items-start">
             <div className="text-sm text-[#7E49FF] font-medium">Зачислить на</div>
-            <span className="text-[#303030] text-[12px]">{selectedCard.deposit}</span>
+            <span className="text-[#303030] text-[12px]">{selectFromCard.cardType}</span>
+            <span className="text-[#303030] text-[12px]">{ selectFromCard.deposit?.slice(0, 4) + '*'?.repeat(selectFromCard.deposit?.length - 8) + selectFromCard.deposit?.slice(-4)}</span>
           </div>
         </div>
       </div>
+      {selectedCard.cardId === selectFromCard.cardId && <span className="text-red-400 z-10 mt-2">Kartalar bir xil</span>}
 
       <div className="w-full flex flex-col justify-between items-start space-y-5 mt-10">
         <div className="w-full flex justify-between items-center">
@@ -176,6 +183,7 @@ const Transfer = () => {
             alt="Редактировать"
             className="absolute right-3 top-[20px] cursor-pointer"
           />
+          <p className={`${firstCurrency.amount>=1000 || firstCurrency.amount==0 ?'hidden':'block'} text-red-500 text-[14px]`}>min: 1000 sum</p>
         </div>
       </div>
 
@@ -214,13 +222,14 @@ const Transfer = () => {
 
 
       {/* Секция загрузки файла */}
-      <div className="flex items-center justify-between w-full px-[10px] py-[16px] bg-[#F5F2FF] rounded-[6px] text-[14px] mt-[40px]">
+      <label className="flex items-center relative cursor-pointer justify-between w-full px-[10px] py-[16px] bg-[#F5F2FF] rounded-[6px] text-[14px] mt-[40px]">
         <div className="flex items-center gap-2">
           <Image src={document} alt="Document Icon" width={16} height={16} />
           <span className="text-[#000] font-medium">Загрузка файла</span>
         </div>
+        <input type="file" onChange={handleFileChange} accept=".png, .jpg, .jpeg .pdf .xlsx .doc .docx" className="w-full opacity-0 top-0 right-0 p-2 absolute h-full cursor-pointer" multiple/>
         <Image src={download} alt="Download Icon" width={16} height={16} />
-      </div>
+      </label>
       <button onClick={() => setCheckedData(true)} className="w-full bg-[#7E49FF] text-white py-3 px-[16px] mt-10 rounded-md text-[16px] font-bold hover:bg-purple-600 transition">
         Сохранить все
       </button>
@@ -231,27 +240,27 @@ const Transfer = () => {
         <div className="flex flex-col gap-2">
           <span className="font-medium flex items-center">
             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-            Тип транзакции: {transactionDetails.type}
+            Тип транзакции: <span className="text-[16px] ml-2 font-medium"> Перемещение</span>
           </span>
           <span className="font-medium flex items-center">
             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-            Валюта: {transactionDetails.currency}
+            Валюта: {selectedCard.monayType}
           </span>
           <span className="font-medium flex items-center">
             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-            Сумма транзакции: {transactionDetails.amount}
+            Сумма транзакции: {firstCurrency.amount}
           </span>
           <span className="font-medium flex items-center">
             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-            Дата транзакции: {transactionDetails.transactionDate}
+            Дата транзакции: {date?date:'HET'}
           </span>
           <span className="font-medium flex items-center">
             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-            Комментарий: {transactionDetails.comment}
+            Комментарий: {comment?comment:'HET'}
           </span>
           <span className="font-medium flex items-center">
             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-            Файл транзакции: {transactionDetails.file}
+            Файл транзакции: {file.length ? file[0]?.name : "НЕТ"}
           </span>
         </div>
       </div>

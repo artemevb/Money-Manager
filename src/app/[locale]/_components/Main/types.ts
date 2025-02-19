@@ -27,7 +27,7 @@ export interface transactionExpensesType{
   transactionDetails: trasactionDetales[]
 }
 interface trasactionDetales{
-  moneyType: string,
+  moneyType: string | null,
   amount: number
 }
 export interface incomeTrancaptionType{
@@ -47,7 +47,7 @@ export interface transactionMoving{
   fromCardId: number,
   toCardId: number,
   transactionDetails: trasactionDetales[]
-  files?: File  | null
+  files?: File[]  | null
   comment: string,
   transactionDate: string,
 }

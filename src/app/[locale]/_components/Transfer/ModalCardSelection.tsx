@@ -55,10 +55,10 @@ const ModalCardSelection: React.FC<ModalCardSelectionProps> = ({
                                     </div>
                                     <div>
                                         <div className="text-[12px] text-[#303030]">{card.cardType}</div>
-                                        <div className="text-[16px] font-semibold text-[#303030]">{card.balance}</div>
+                                        <div className="text-[16px] font-semibold text-[#303030]">{card.balance.toLocaleString()} <span className="font-medium text-[10px] uppercase">{card.moneyType}</span></div>
                                     </div>
                                 </div>
-                                <div className="text-sm font-medium text-[#303030]">{card.cardNumber}</div>
+                                <div className="text-sm font-medium text-[#303030]">{card.cardNumber?.slice(0, 4) + '*'?.repeat(card.cardNumber?.length - 8) + card.cardNumber?.slice(-4)}</div>
                             </li>
                         );
                     })}

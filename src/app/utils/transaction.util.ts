@@ -55,8 +55,10 @@ export const transactionUtils = {
     postMoving: async ({transactionType,fromCardId,toCardId,transactionDate,transactionDetails,comment,files}:transactionMoving) => {
         const formData = new FormData();
     
-        if(files){
-            formData.append('files', files);  
+        if(files?.length){
+            files.forEach(file => (
+                formData.append('files', file)
+            ))
         }
         formData.append('comment', comment);
         formData.append('fromCardId', fromCardId.toString());

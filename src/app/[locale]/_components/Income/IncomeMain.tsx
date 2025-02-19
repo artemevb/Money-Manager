@@ -77,10 +77,6 @@ const IncomeMain = () => {
     const handleSecondChange = (field: string, value: string | number) => {        
         setSecondCurrency((prev) => prev ? { ...prev, [field]: value } : { moneyType: '', amount: 0 });        
     };    
-    const setTodayDate = () => {
-        const today = new Date().toISOString().split("T")[0];
-        setDate(today);
-    };
     // servise get
     const { data: services } = useQuery({
         queryKey: ['services'],
@@ -312,7 +308,7 @@ const IncomeMain = () => {
                 <div className="mt-10">
                     <h3 className='text-[20px] font-bold'>Введите дату </h3>
                     <div className="flex justify-between items-center gap-x-4 mt-5">
-                        <button type='button' onClick={setTodayDate} className='bg-[#F5F2FF] text-start rounded-[6px] px-3 py-4 text-[14px] font-medium w-full'>
+                        <button type='button' onClick={() => setDate(new Date().toISOString().split("T")[0])} className='bg-[#F5F2FF] text-start rounded-[6px] px-3 py-4 text-[14px] font-medium w-full'>
                             Текущая дата
                         </button>
                         <input

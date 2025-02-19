@@ -96,7 +96,7 @@ export default function IncomePayModal({ handleClose, open, selectClient }: Moda
                                 <p className="text-[18px]">Клиент  </p>
                             </div> */}
                             {
-                                clients?.data.length && clients.data.map((el: clietnType, i:number) => (
+                                clients?.data?.length && clients.data.map((el: clietnType, i:number) => (
                                     <div key={Math.random()} onClick={() => handleSlelectClient(i)} className="w-full cursor-pointer rounded-[16px] px-3 py-5 text-center shadow-md border text-[#7E49FF] flex justify-between items-start">
                                         <div className="flex items-center gap-x-2">
                                             <Image className='p-2 bg-[#F5F2FF] rounded-full' width={50} height={50} src={userIcon} alt='user a' />

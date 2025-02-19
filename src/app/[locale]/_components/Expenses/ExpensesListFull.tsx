@@ -40,7 +40,7 @@ const Transfer = () => {
     };
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
-            const selectedFiles = Array.from(event.target.files).slice(0, 2); // Faqat 2 ta faylni olish
+            const selectedFiles = Array.from(event.target.files)?.slice(0, 2); // Faqat 2 ta faylni olish
             setFile(selectedFiles);
         }
     };
@@ -59,12 +59,13 @@ const Transfer = () => {
 
     const [modalType, setModalType] = useState<"withdraw" | "deposit" | "id" | "cardType" | null>(null);
     const [selectedCard, setSelectedCard] = useState({
-        withdraw: availableCards?.data?.cards?.length && availableCards?.data?.cards[0]?.cardNumber,
+        withdraw: availableCards?.data?.cards[0]?.cardNumber ? availableCards?.data?.cards[0]?.cardNumber : "9860 **** 1467",
         deposit: "Категория расходов ",
         id: availableCards?.data?.cards?.length &&  availableCards?.data?.cards[0]?.id,
         cardType: availableCards?.data?.cards?.length &&  availableCards?.data?.cards[0]?.cardType
     });    
 
+   console.log(availableCards?.data?.cards[0]?.cardNumber);
    
     const transactionDetailsData = secondCurrency?.amount ? [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }, { moneyType: secondCurrency.moneyType, amount: secondCurrency.amount }] : [{ moneyType: firstCurrency.moneyType, amount: firstCurrency.amount }]
 
@@ -85,13 +86,13 @@ const Transfer = () => {
             transactionType: "CONSUMPTION",
             fromCardId: selectedCard.id,
             toCategoryConsumptionId: selectedCategory.id,
-            files: file.length ? file : null,
+            files: file?.length ? file : null,
             transactionDate: date,
             comment: comment,
             transactionDetails: transactionDetailsData,
         })
     }
-    const handleCardSelect = (cardNumber: string, cardId:number, cardType:string) => {
+    const handleCardSelect = (cardNumber: string, cardId: number, cardType:string) => {
         if (modalType === "withdraw") {
             setSelectedCard((prev) => ({ ...prev, withdraw: cardNumber,cardType:cardType, id: cardId }));
         } else if (modalType === "deposit") {
@@ -143,7 +144,7 @@ const Transfer = () => {
                             <div className="text-sm text-[#7E49FF] font-medium">Списать с</div>
                             <div className="text-[#303030] text-[12px]">{selectedCard?.cardType}</div>
                             <div className="text-[16px] font-semibold text-[#303030] whitespace-nowrap">
-                                {selectedCard.withdraw}
+                                {selectedCard.withdraw?.slice(0, 4)+ '*'?.repeat(selectedCard.withdraw?.length - 8) + selectedCard?.withdraw?.slice(-4)}
                             </div>
                         </div>
                     </div>
@@ -263,7 +264,7 @@ const Transfer = () => {
                     </button>
                     <input
                         type="date"
-                        defaultValue={date}
+                        value={date}
                         onChange={(e) => setDate(e.target.value)}
                         className="w-full px-[10px] py-[16px] bg-[#F5F2FF] rounded-[6px] text-[14px]"
                     />
@@ -324,7 +325,7 @@ const Transfer = () => {
                         </span>
                         <span className="font-medium flex items-center">
                             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>
-                            Файл транзакции: {file.length ? file[0]?.name : "НЕТ"}
+                            Файл транзакции: {file?.length ? file[0]?.name : "НЕТ"}
                         </span>
                         <span className="font-medium flex items-center">
                             <span className="w-2 h-2 rounded-full bg-[#6E3EF2] mr-2"></span>

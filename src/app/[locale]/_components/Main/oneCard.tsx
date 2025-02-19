@@ -17,7 +17,7 @@ interface cartProps {
 
 const OneCard = (data: cartProps) => {
     const queryClient = useQueryClient()    
-    const safeCardNumber = data.cartNumber.slice(0, 4) + '*'.repeat(data.cartNumber.length - 8) + data.cartNumber.slice(-4)
+    const safeCardNumber = data.cartNumber?.slice(0, 4) + '*'?.repeat(data.cartNumber.length - 8) + data.cartNumber?.slice(-4)
     
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
