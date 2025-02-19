@@ -33,7 +33,7 @@ const ModalCardSelection: React.FC<ModalCardSelectionProps> = ({
             <div className="bg-white rounded-[16px] p-5 w-[90%] max-w-sm">
                 <h2 className="text-xl font-semibold mb-4">{title}</h2>
                 <ul className="space-y-3">
-                    {availableCards.map((card) => {
+                    {availableCards?.map((card) => {
                         const isSelected = card.cardNumber === selectedCardNumber;
                         return (
                             <li

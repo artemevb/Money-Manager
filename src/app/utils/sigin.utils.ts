@@ -17,8 +17,9 @@ export const AuthUtils = {
         const {data} = await customAxios.post('api/auth/login',{
             login, password, device
         })
-        console.log(data?.data);
+        console.log(data);
         localStorage.setItem('accessToken', data?.data?.token?.accessToken)
+        localStorage.setItem('refreshToken', data?.data?.token?.refreshToken)
         localStorage.setItem('role', data?.data?.user?.role)
         return data
     }

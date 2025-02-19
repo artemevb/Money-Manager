@@ -41,7 +41,7 @@ const Sigin = () => {
                 name: window.navigator.userAgent
             },
         })
-        console.log(loginAuth.variables);        
+        console.log(loginAuth);        
     }
     return (
         <div className='px-3'>
