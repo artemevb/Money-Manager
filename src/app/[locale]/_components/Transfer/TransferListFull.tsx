@@ -22,7 +22,7 @@ const Transfer = () => {
   const [date, setDate] = useState("2024-10-26");
   const [comment, setComment] = useState("");
   const [checkedData, setCheckedData] = useState(false)
-  const [firstCurrency, setFirstCurrency] = useState({ moneyType: "USD", amount: 0 });
+  const [firstCurrency, setFirstCurrency] = useState({ moneyType: "UZS", amount: 0 });
   const [transactionDetails] = useState({
     type: "Перемещение",
     currency: "Карта суммы 1",
@@ -36,6 +36,9 @@ const Transfer = () => {
   const [selectedCard, setSelectedCard] = useState({
     withdraw: "9860 **** 1467",
     deposit: "Выберите карту",
+    cardId: 0,
+    cardType: "HUMO",
+    monayType: "UZS"
   });
   const router = useRouter();
 
@@ -69,9 +72,9 @@ const Transfer = () => {
     })
   }
 
-  const handleCardSelect = (cardNumber: string) => {
+  const handleCardSelect = (cardNumber: string, cardId: number, cardType:string, monayType:string) => {
     if (modalType === "withdraw") {
-      setSelectedCard((prev) => ({ ...prev, withdraw: cardNumber }));
+      setSelectedCard((prev) => ({ ...prev, withdraw: cardNumber, cardId:cardId, cardType:cardType, monayType:monayType }));
     } else if (modalType === "deposit") {
       setSelectedCard((prev) => ({ ...prev, deposit: cardNumber }));
     }
