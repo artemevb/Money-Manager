@@ -26,7 +26,7 @@ export interface transactionExpensesType{
   comment: string,
   transactionDetails: trasactionDetales[]
 }
-interface trasactionDetales{
+export interface trasactionDetales{
   moneyType: string | null,
   amount: number
 }

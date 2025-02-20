@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import Image from "next/image";
 import arrow_right from "@/public/svg/arrow-right-white.svg";
+import { useQuery } from "@tanstack/react-query";
+import { cardUtils } from "@/src/app/utils/card.utils";
+import { cardType, trasactionDetales } from "./types";
 
 interface NewsCompProps {
     locale: string;
@@ -11,44 +14,24 @@ interface NewsCompProps {
 
 interface Payment {
     id: number;
-    date: string;
-    time: string;
-    name: string;
-    amount: string;
-    status: "Одобрено" | "Отклонено";
+    comment:string,
+    createdAt:string
+    fromCard: cardType
+    transactionStatus:"CONFIRMED"|"DENIED"
+    transactionDate:string
+    transactionDetails:trasactionDetales[]
+
 }
 
-const payments: Payment[] = [
-    {
-        id: 1,
-        date: "12.02.2025",
-        time: "13:39",
-        name: "Азиз Азимов Шухратович",
-        amount: "9 860 146 UZS",
-        status: "Одобрено",
-    },
-    {
-        id: 2,
-        date: "12.02.2025",
-        time: "13:39",
-        name: "Азиз Азимов Шухратович",
-        amount: "9 860 146 UZS",
-        status: "Отклонено",
-    },
-    {
-        id: 3,
-        date: "13.02.2025",
-        time: "13:39",
-        name: "Азиз Азимов Шухратович",
-        amount: "9 860 146 UZS",
-        status: "Одобрено",
-    },
-];
 
 const PaymentsListFull = ({ locale }: NewsCompProps) => {
     const router = useRouter();
-
-
+    const {data: payments} = useQuery({
+        queryKey: ['cards'],
+        queryFn: cardUtils.homeCard
+    })
+    console.log(payments?.data?.lastTransactions);
+    
     return (
         <div className="mt-10">
             <h3 className="text-xl font-semibold mb-4">Последние платежи</h3>
@@ -68,31 +51,31 @@ const PaymentsListFull = ({ locale }: NewsCompProps) => {
 
             {/* Список платежей */}
             <div className="mt-4 space-y-6">
-                {payments.map((payment, index) => {
+                {payments?.data?.lastTransactions?.length && payments?.data?.lastTransactions.map((payment:Payment, index:number) => {
                     const isFirstInGroup =
-                        index === 0 || payments[index - 1].date !== payment.date;
+                        index === 0 || payments?.data?.lastTransactions[index - 1].date !== payment.transactionDate;
 
                     return (
                         <div key={payment.id}>
                             {isFirstInGroup && (
                                 <div className="text-[#000] text-sm font-medium mb-2">
-                                    {payment.date}
+                                    {payment.transactionDate}
                                 </div>
                             )}
                             <div className="bg-white shadow-lg rounded-xl p-[10px] flex justify-between items-center border-[#F5F2FF] border h-full">
                                 <div className="h-full flex flex-col items-start justify-start">
-                                    <div className="text-[#A6A6A6] text-sm">{payment.time} Перевод</div>
-                                    <div className="font-medium">{payment.name}</div>
+                                    <div className="text-[#A6A6A6] text-sm">{payment.createdAt.split("T")[1].slice(0, 5)} Перевод</div>
+                                    <div className="font-medium">{payment.fromCard.cardNumber}</div>
                                 </div>
                                 <div className="text-right flex flex-col justify-between gap-[30px]">
-                                    <div className="text-[14px]">{payment.amount}</div>
+                                    <span className="text-[14px]">{payment.transactionDetails[0].amount} {payment.transactionDetails[0].moneyType}</span>
                                     <div
-                                        className={`text-xs font-medium px-2 flex justify-center items-start py-1 rounded-full ${payment.status === "Одобрено"
+                                        className={`text-xs font-medium px-2 flex justify-center items-start py-1 rounded-full ${payment.transactionStatus === "CONFIRMED"
                                             ? "bg-green-100 text-green-600"
                                             : "bg-red-100 text-red-600"
                                             }`}
                                     >
-                                        {payment.status}
+                                        {payment.transactionStatus}
                                     </div>
                                 </div>
                             </div>

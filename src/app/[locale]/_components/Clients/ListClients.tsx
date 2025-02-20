@@ -10,8 +10,9 @@ import phone from "@/public/svg/main/phone.svg";
 import pen from "@/public/svg/pen.svg";
 import { EditClientModal } from "./EditClientModal";
 import { AddClientModal } from "./AddClientModal"; // новый модальный компонент
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clientUtils } from "@/src/app/utils/client.utils";
+import toast from "react-hot-toast";
 
 interface Client {
   id: number;
@@ -31,7 +32,7 @@ const Home: NextPage = () => {
 
   // Состояние для создания нового клиента
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
+  const queryClient = useQueryClient()
   const handleEditClick = (client: Client) => {
     setSelectedClient(client); // устанавливаем клиента для редактирования
     setIsEditModalOpen(true);
@@ -53,6 +54,17 @@ const Home: NextPage = () => {
   const {data:client} = useQuery({
     queryKey:['client'],
     queryFn: clientUtils.getClientAll
+  })
+  const deleteClient = useMutation({
+    mutationFn: clientUtils.deleteClient,
+    onSuccess: () => {
+      toast.success("Delete client 🗑️")
+      queryClient.invalidateQueries({queryKey: ['client']})
+    },
+    onError: (err) => {
+      console.log(err);
+      toast.error('Something went wrong')
+    }
   })
 
   return (
@@ -140,6 +152,7 @@ const Home: NextPage = () => {
                   />
                 </button>
                 <button
+                onClick={() => deleteClient.mutate({id: client.id})}
                   className="flex items-center justify-center rounded-md bg-red-50 p-2 text-red-500 hover:bg-red-100"
                 >
                   <Image
