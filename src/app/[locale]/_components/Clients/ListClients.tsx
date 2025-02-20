@@ -10,33 +10,19 @@ import phone from "@/public/svg/main/phone.svg";
 import pen from "@/public/svg/pen.svg";
 import { EditClientModal } from "./EditClientModal";
 import { AddClientModal } from "./AddClientModal"; // новый модальный компонент
+import { useQuery } from "@tanstack/react-query";
+import { clientUtils } from "@/src/app/utils/client.utils";
 
 interface Client {
   id: number;
-  fullName: string;
-  jobTitle: string;
+  firstName: string;
+  lastName: string
+  fatherName: string;
   phone: string;
-  status: string;
+  status: "ACTUAL" | "NOT_ACTUAL";
+  serviceTypeId: number
 }
 
-// Пример с мок-данными
-const clientsData: Client[] = [
-  {
-    id: 1,
-    fullName: "Хусенова Нафиса Шухратовна",
-    jobTitle: "Разработка сайта",
-    phone: "93 670 28 02",
-    status: "Актуально",
-  },
-  {
-    id: 2,
-    fullName: "Иванов Иван Иванович",
-    jobTitle: "Мобильное приложение",
-    phone: "99 123 45 67",
-    status: "На паузе",
-  },
-  // ...
-];
 
 const Home: NextPage = () => {
   // Состояние для редактирования клиента
@@ -63,6 +49,11 @@ const Home: NextPage = () => {
   const handleCloseAddModal = () => {
     setIsAddModalOpen(false);
   };
+
+  const {data:client} = useQuery({
+    queryKey:['client'],
+    queryFn: clientUtils.getClientAll
+  })
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -110,16 +101,16 @@ const Home: NextPage = () => {
 
       {/* Список клиентов */}
       <div className="space-y-4">
-        {clientsData.map((client) => (
+        {client?.data?.length && client?.data?.map((client:Client) => (
           <div
             key={client.id}
             className="flex flex-col gap-2 items-start justify-between rounded-lg bg-white p-5 shadow"
           >
             <div>
               <h2 className="text-sm font-semibold text-gray-800">
-                {client.fullName}
+                {client.lastName}
               </h2>
-              <p className="text-xs text-gray-500">{client.jobTitle}</p>
+              <p className="text-xs text-gray-500">{client.firstName} {client.fatherName}</p>
             </div>
             <div className="flex w-full items-center justify-between text-xs text-gray-600">
               <div className="flex items-center">
@@ -132,7 +123,7 @@ const Home: NextPage = () => {
                 />
                 {client.phone}
               </div>
-              <span className="rounded-md bg-green-100 px-2 py-1 text-[10px] font-medium text-green-600">
+              <span className={`rounded-md  px-2 py-1 text-[10px] font-medium ${client.status==="ACTUAL"?"bg-green-100 text-green-600":"bg-red-500 text-white"}`}>
                 {client.status}
               </span>
               <div className="flex gap-2">

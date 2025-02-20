@@ -5,13 +5,20 @@ import Image from 'next/image';
 import pen from '@/public/svg/pen.svg';
 import arrowBack from '@/public/svg/clients/arrow_back.svg';
 import trash from '@/public/svg/main/trash_white.svg';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { serviceUtils } from '@/src/app/utils/service.utils';
+import { serviseType } from '../Main/types';
+import toast from 'react-hot-toast';
+import { clientUtils } from '@/src/app/utils/client.utils';
 
 interface Client {
     id: number;
-    fullName: string;
-    jobTitle: string;
+    firstName: string;
+    lastName: string;
+    fatherName: string;
     phone: string;
     status: string;
+    serviceTypeId:number
 }
 
 interface EditClientModalProps {
@@ -23,20 +30,48 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
     client,
     onClose,
 }) => {
-    const [fullName, setFullName] = useState(client.fullName);
-    const [jobTitle, setJobTitle] = useState(client.jobTitle);
+    const [firstName, setFirstName] = useState(client.firstName);
+    const [lastName, setLastName] = useState(client.lastName);
+    const [fatherName, setFatherName] = useState(client.fatherName);
+    const [jobTitle, setJobTitle] = useState(client.serviceTypeId);
     const [phone, setPhone] = useState(client.phone);
-    const [status, setStatus] = useState(client.status);
+    const [status, setStatus] = useState<"ACTUAL" | "NOT_ACTUAL">(client.status as "ACTUAL" | "NOT_ACTUAL");
+    const queryClient = useQueryClient()
+    const editClient = useMutation({
+        mutationFn: clientUtils.editClient,
+        onSuccess: () => {
+            toast.success('Success edit clinet')
+            queryClient.invalidateQueries({queryKey:['client']})
+            onClose();
+        },
+        onError: (err) => {
+            console.log(err);
+            toast.error("Something went wrong")
+        }
+    })
 
     const handleSave = () => {
-        console.log('Сохраняем...', { fullName, jobTitle, phone, status });
+        editClient.mutate({
+            fatherName: fatherName,
+            firstName:firstName,
+            lastName:lastName,
+            phone:phone,
+            serviceTypeId:jobTitle,
+            id:client.id,
+            status: status,
+        })
         onClose();
     };
+
 
     const handleDelete = () => {
         console.log(`Удаляем клиента #${client.id}`);
         onClose();
     };
+    const {data: getService} = useQuery({
+        queryKey: ['service'],
+        queryFn: serviceUtils.getService
+    })
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
@@ -59,15 +94,52 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
                 <h2 className="mb-4 text-lg font-semibold text-gray-800">
                     Редактировать клиента
                 </h2>
+                <div className="grid grid-cols-2 gap-2">
+                    {/* Поле для ФИО с иконкой pen */}
+                    <div className="relative">
+                        <label className="text-sm text-gray-600">Firstname</label>
+                        <input
+                            type="text"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
+                        />
+                        <Image
+                            src={pen}
+                            width={16}
+                            height={16}
+                            alt="Редактировать"
+                            className="absolute right-3 top-[40px] cursor-pointer"
+                        />
+                    </div>
+
+                    {/* Поле для телефона с иконкой pen */}
+                    <div className="relative">
+                        <label className="text-sm text-gray-600">Lastname</label>
+                        <input
+                            type="text"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
+                        />
+                        <Image
+                            src={pen}
+                            width={16}
+                            height={16}
+                            alt="Редактировать"
+                            className="absolute right-3 top-[40px] cursor-pointer"
+                        />
+                    </div>
+                </div>
 
                 <div className="grid grid-cols-2 gap-2">
                     {/* Поле для ФИО с иконкой pen */}
                     <div className="relative">
-                        <label className="text-sm text-gray-600">ФИО</label>
+                        <label className="text-sm text-gray-600">Fathername</label>
                         <input
                             type="text"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
+                            value={fatherName}
+                            onChange={(e) => setFatherName(e.target.value)}
                             className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
                         />
                         <Image
@@ -83,7 +155,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
                     <div className="relative">
                         <label className="text-sm text-gray-600">Телефон</label>
                         <input
-                            type="text"
+                            type="tel"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10"
@@ -102,13 +174,13 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
                     <label className="text-sm text-gray-600">Услуга</label>
                     <select
                         value={jobTitle}
-                        onChange={(e) => setJobTitle(e.target.value)}
+                        onChange={(e) => setJobTitle(Number(e.target.value))}
                         className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10 appearance-none"
                         style={{ backgroundImage: `url('/svg/arrow_down.svg')`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
                     >
-                        <option value="сайт">Сайт</option>
-                        <option value="реклама">Реклама</option>
-                        <option value="маркетинг">Маркетинг</option>
+                        {getService?.data?.length && getService?.data.map((el: serviseType) => (
+                            <option key={el.id} value={el.id}>{el.name}</option>
+                        ))}
                     </select>
 
                 </div>
@@ -117,13 +189,12 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
                     <label className="text-sm text-gray-600">Статус</label>
                     <select
                         value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={(e) => setStatus(e.target.value as "ACTUAL" | "NOT_ACTUAL")}
                         className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10 appearance-none"
                         style={{ backgroundImage: `url('/svg/arrow_down.svg')`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
                     >
-                        <option value="Актуально">Актуально</option>
-                        <option value="На паузе">На паузе</option>
-                        <option value="Завершено">Завершено</option>
+                        <option value="ACTUAL">ACTUAL</option>
+                        <option value="NOT_ACTUAL">NOT ACTUAL</option>
                     </select>
                 </div>
 

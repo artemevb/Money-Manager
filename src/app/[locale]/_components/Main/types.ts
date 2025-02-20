@@ -53,11 +53,12 @@ export interface transactionMoving{
 }
 
 export interface clietnType{
+  id?:number
   firstName: string,
   lastName: string,
   fatherName: string,
   phone: string,
-  status: "ACTUAL",
+  status: "ACTUAL" | "NOT_ACTUAL",
   serviceTypeId: number
 }
 export interface transactionTypeOnsubmit {
