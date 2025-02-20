@@ -8,34 +8,24 @@ import trash from "@/public/svg/main/trash.svg";
 import pen from "@/public/svg/pen.svg";
 import { EditServiceModal } from "./EditServiceModal";
 import { AddServiceModal } from "./AddServiceModal"; // новый модальный компонент
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { serviceUtils } from "@/src/app/utils/service.utils";
+import toast from "react-hot-toast";
 
 interface Service {
     id: number;
-    fullName: string;
-    transactions: string;
+    name: string;
+    countTransaction: number;
 }
 
-// Пример с мок-данными
-const servicesData: Service[] = [
-    {
-        id: 1,
-        fullName: "Разработка сайта",
-        transactions: "12",
-    },
-    {
-        id: 2,
-        fullName: "Иванов Иван Иванович",
-        transactions: "12",
-    },
-    // ...
-];
+
 
 const Home: NextPage = () => {
     const [selectedService, setSelectedService] = useState<Service | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
+    const queryClient = useQueryClient()
     const handleEditClick = (service: Service) => {
         setSelectedService(service); 
         setIsEditModalOpen(true);
@@ -53,6 +43,24 @@ const Home: NextPage = () => {
     const handleCloseAddModal = () => {
         setIsAddModalOpen(false);
     };
+
+    const {data:services} = useQuery({
+        queryKey:['services'],
+        queryFn: serviceUtils.getService
+    })
+    console.log(services?.data);
+    
+    const deleteService = useMutation({
+        mutationFn:serviceUtils.deleteServise,
+        onSuccess: () =>{
+            toast.success("Delete service 🗑️")
+            queryClient.invalidateQueries({queryKey: ['services']})
+        },
+        onError: (err) => {
+            console.log(err);
+            toast.error("Something went wrong 😔")
+        }
+    })
 
     return (
         <div className="min-h-screen bg-gray-50 p-4">
@@ -100,16 +108,16 @@ const Home: NextPage = () => {
 
             {/* Список клиентов */}
             <div className="space-y-4">
-                {servicesData.map((service) => (
+                {services?.data?.length && services?.data.map((service: Service) => (
                     <div
                         key={service.id}
                         className="flex flex-row gap-2 items-start justify-between rounded-lg bg-white p-5 shadow"
                     >
                         <div className="w-full">
                             <h2 className="text-sm font-semibold text-gray-800">
-                                {service.fullName}
+                                {service.name}
                             </h2>
-                            <p className="text-xs text-gray-500">{service.transactions}</p>
+                            <p className="text-xs text-gray-500">{service.countTransaction}</p>
                         </div>
                         <div className="flex w-full items-center justify-end text-xs text-gray-600">
                             <div className="flex gap-2">
@@ -126,6 +134,7 @@ const Home: NextPage = () => {
                                     />
                                 </button>
                                 <button
+                                onClick={() => deleteService.mutate({id: service.id})}
                                     className="flex items-center justify-center rounded-md bg-red-50 p-2 text-red-500 hover:bg-red-100"
                                 >
                                     <Image

@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import arrowBack from "@/public/svg/clients/arrow_back.svg";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { serviceUtils } from "@/src/app/utils/service.utils";
+import toast from "react-hot-toast";
 
 interface AddServiceModalProps {
     onClose: () => void;
@@ -12,13 +15,28 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ onClose }) => 
     // Инициализируем поля пустыми строками или дефолтными значениями
     const [fullName, setFullName] = useState("");
     const [transactions, setTransactions] = useState("сайт");
-
+    const queryClient = useQueryClient()
+    
+    const addService = useMutation({
+        mutationFn: serviceUtils.postService,
+        onSuccess: () => {
+            toast.success('Add new service')
+            queryClient.invalidateQueries({queryKey: ['services']})
+            onClose();
+        },
+        onError: (err) => {
+            toast.error('Something went wrong')
+            console.log(err);            
+        }
+    })
     const handleSave = () => {
-        // Здесь можно реализовать вызов API или обновление состояния в родительском компоненте
         console.log("Создаем нового клиента:", {
             fullName,
             transactions,
         });
+        addService.mutate({
+            name: fullName
+        })
         onClose();
     };
 

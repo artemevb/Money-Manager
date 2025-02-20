@@ -5,11 +5,14 @@ import Image from 'next/image';
 import pen from '@/public/svg/pen.svg';
 import arrowBack from '@/public/svg/clients/arrow_back.svg';
 import trash from '@/public/svg/main/trash_white.svg';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { serviceUtils } from '@/src/app/utils/service.utils';
+import toast from 'react-hot-toast';
 
 interface Service {
     id: number;
-    fullName: string;
-    transactions: string;
+    name: string;
+    countTransaction: number;
 }
 
 interface EditServiceModalProps {
@@ -21,16 +24,38 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({
     service,
     onClose,
 }) => {
-    const [fullName, setFullName] = useState(service.fullName);
-    const [transactions, setTransactions] = useState<string>(service.transactions);
+    const [fullName, setFullName] = useState(service.name);
+    const queryClient = useQueryClient()
+    const editService = useMutation({
+        mutationFn: serviceUtils.editService,
+        onSuccess: () => {
+            toast.success("Edit service")
+            queryClient.invalidateQueries({queryKey: ['services']})
+            onClose()
+        },
+        onError: (err) => {
+            toast.error("Something went wrong😔")
+            console.log(err);            
+        }
+    })
+    const deleteService = useMutation({
+        mutationFn:serviceUtils.deleteServise,
+        onSuccess: () =>{
+            toast.success("Delete service 🗑️")
+            queryClient.invalidateQueries({queryKey: ['services']})
+            onClose()
+        },
+        onError: (err) => {
+            console.log(err);
+            toast.error("Something went wrong 😔")
+        }
+    })
 
     const handleSave = () => {
-        console.log('Сохраняем...', { fullName, transactions });
-        onClose();
-    };
-
-    const handleDelete = () => {
-        console.log(`Удаляем клиента #${service.id}`);
+        editService.mutate({
+            id: service.id,
+            name:fullName
+        })
         onClose();
     };
 
@@ -73,25 +98,11 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({
                             className="absolute right-3 top-[40px] cursor-pointer"
                         />
                     </div>
-
-
                 </div>
-
-                <div className="relative mt-2">
-                    <label className="text-sm text-gray-600">Количество транзакций</label>
-                    <input
-                        type="text"
-                        value={transactions}
-                        onChange={(e) => setTransactions(e.target.value)}
-                        className="w-full rounded-md font-medium px-2 py-[16px] bg-[#F5F2FF] text-sm focus:ring-1 focus:ring-purple-500 pr-10 appearance-none"
-                    >
-                    </input>
-
-                </div>
-
+                
                 <div className="mt-4 flex items-center justify-end space-x-2">
                     <button
-                        onClick={handleDelete}
+                        onClick={() => deleteService.mutate({id:service.id})}
                         className="flex items-center gap-1 rounded-md bg-[#7E49FF] px-3 py-[6px]"
                     >
                         <Image
