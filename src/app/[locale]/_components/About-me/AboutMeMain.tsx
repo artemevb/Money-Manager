@@ -6,12 +6,19 @@ import CloseEyes from "@/public/svg/NotEyes.svg";
 import Eyes from "@/public/svg/eyes.svg";
 import Pen from "@/public/svg/pen.svg";
 import arrowBack from "@/public/svg/clients/arrow_back.svg";
+import { useQuery } from "@tanstack/react-query";
+import { userUtils } from "@/src/app/utils/user.utils";
 
 const ProfileSettings: React.FC = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [loginVisible, setLoginVisible] = useState(false);
     const router = useRouter();
-
+    const {data:userData} = useQuery({
+        queryKey: ['user'],
+        queryFn: userUtils.getUserAccaunt
+    })
+    console.log(userData?.data);
+    // const [firstName, setFirsName]= useState()
     return (
         <div className="max-w-md mx-auto px-4 py-[28px]">
             {/* Назад */}

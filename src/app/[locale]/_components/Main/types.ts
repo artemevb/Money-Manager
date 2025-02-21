@@ -74,3 +74,16 @@ export interface transactionTypeOnsubmit {
   toCardId?: number;
   fromCardId?: number;
 }
+export interface userType{  
+  id?:number,
+  firstName: string,
+  lastName: string,
+  fatherName: string,
+  email: string,
+  password: string,
+  role: "ADMIN",
+  oldPassword: string,
+  newPassword: string,
+  oldLogin: string,
+  newLogin: string
+}
