@@ -23,12 +23,9 @@ export const userUtils = {
         )
         return data
     },
-    editUserAccaunt: async ({email,fatherName,firstName,lastName,newLogin,newPassword,oldLogin,oldPassword,password,role}:userType) => {
-        const {data} = await customAxios.put('api/user',
-            {email,fatherName,firstName,lastName,newLogin,newPassword,oldLogin,oldPassword,password,role},
-            {headers: {
-                'Content-Type': 'multipart/form-data', 
-            }}
+    editUserAccaunt: async ({fatherName,firstName,lastName,newLogin,newPassword,oldLogin,oldPassword}:userType) => {
+        const {data} = await customAxios.put('api/user/account',
+            {fatherName,firstName,lastName,newLogin,newPassword,oldLogin,oldPassword}
         )
         return data
     }
