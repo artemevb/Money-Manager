@@ -14,7 +14,7 @@ interface AddServiceModalProps {
 export const AddServiceModal: React.FC<AddServiceModalProps> = ({ onClose }) => {
     // Инициализируем поля пустыми строками или дефолтными значениями
     const [fullName, setFullName] = useState("");
-    const [transactions, setTransactions] = useState("сайт");
+    const [transactions, setTransactions] = useState("2");
     const queryClient = useQueryClient()
     
     const addService = useMutation({
@@ -94,7 +94,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ onClose }) => 
 
                 <div className="relative mt-2">
                     <input
-                        type="text"
+                        type="tel"
                         value={transactions}
                         onChange={(e) => setTransactions(e.target.value)}
                         placeholder="Количество транзакций"

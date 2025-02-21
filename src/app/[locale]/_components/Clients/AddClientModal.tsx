@@ -191,8 +191,8 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({ onClose }) => {
                             backgroundPosition: "right 12px center",
                         }}
                     >
-                        <option value="ACTUAL">ACTUAL</option>
-                        <option value="NOT_ACTUAL">NOT ACTUAL</option>
+                        <option value="ACTUAL">Aктивен</option>
+                        <option value="NOT_ACTUAL">Hе активен</option>
                     </select>
                 </div>
 
