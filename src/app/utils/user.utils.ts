@@ -24,9 +24,10 @@ export const userUtils = {
         return data
     },
     editUserAccaunt: async ({fatherName,firstName,lastName,newLogin,newPassword,oldLogin,oldPassword}:userType) => {
-        const {data} = await customAxios.put('api/user/account',
+        const {data, headers} = await customAxios.put('api/user/account',
             {fatherName,firstName,lastName,newLogin,newPassword,oldLogin,oldPassword}
         )
+        console.log(headers);        
         return data
     }
 }

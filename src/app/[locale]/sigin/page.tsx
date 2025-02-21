@@ -31,17 +31,23 @@ const Sigin = () => {
         const form = e.currentTarget;
         const login = form.login.value;
         const password = form.password.value;
+        let deviceId = localStorage.getItem("deviceId");
+        if (!deviceId) {
+            // Agar mavjud bo'lmasa, yangi `deviceId` yaratamiz
+            deviceId = Math.random().toString();
+            localStorage.setItem("deviceId", deviceId); // Saqlab qo'yamiz
+        }
         loginAuth.mutate({
             login,
             password,
             device:{
                 firebaseToken:"",
-                deviceId: Math.random().toString(),
+                deviceId: deviceId,
                 type:'WEB',
                 name: window.navigator.userAgent
             },
         })
-        console.log(loginAuth);        
+        console.log(loginAuth.variables);        
     }
     return (
         <div className='px-3'>

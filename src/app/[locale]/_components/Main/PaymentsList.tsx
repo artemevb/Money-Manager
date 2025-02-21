@@ -6,7 +6,7 @@ import Image from "next/image";
 import arrow_right from "@/public/svg/arrow-right-white.svg";
 import { useQuery } from "@tanstack/react-query";
 import { cardUtils } from "@/src/app/utils/card.utils";
-import { cardType, trasactionDetales } from "./types";
+import { cardType, clietnType, trasactionDetales } from "./types";
 
 interface NewsCompProps {
     locale: string;
@@ -20,7 +20,7 @@ interface Payment {
     transactionStatus:"CONFIRMED"|"DENIED"
     transactionDate:string
     transactionDetails:trasactionDetales[]
-
+    fromClient?: clietnType
 }
 
 
@@ -64,11 +64,11 @@ const PaymentsListFull = ({ locale }: NewsCompProps) => {
                             )}
                             <div className="bg-white shadow-lg rounded-xl p-[10px] flex justify-between items-center border-[#F5F2FF] border h-full">
                                 <div className="h-full flex flex-col items-start justify-start">
-                                    <div className="text-[#A6A6A6] text-sm">{payment.createdAt.split("T")[1].slice(0, 5)} Перевод</div>
-                                    <div className="font-medium">{payment.fromCard.cardNumber}</div>
+                                    <div className="text-[#A6A6A6] text-sm">{payment?.createdAt.split("T")[1].slice(0, 5)} Перевод</div>
+                                    <div className="font-medium">{payment?.fromCard ? payment?.fromCard?.cardNumber?.slice(0, 4) + '*'?.repeat(payment?.fromCard?.cardNumber?.length - 8) + payment?.fromCard?.cardNumber?.slice(-4): payment?.fromClient?.firstName}</div>
                                 </div>
                                 <div className="text-right flex flex-col justify-between gap-[30px]">
-                                    <span className="text-[14px]">{payment.transactionDetails[0].amount} {payment.transactionDetails[0].moneyType}</span>
+                                    <span className="text-[14px]">{payment?.transactionDetails[0].amount} {payment.transactionDetails[0].moneyType}</span>
                                     <div
                                         className={`text-xs font-medium px-2 flex justify-center items-start py-1 rounded-full ${payment.transactionStatus === "CONFIRMED"
                                             ? "bg-green-100 text-green-600"

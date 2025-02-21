@@ -9,7 +9,7 @@ type HomeProps = {
 
 export default function Home({ params }: HomeProps) {
   const locale: Locales = params?.locale === 'uz' ? 'uz' : 'ru';
-
+  
   return (
     <div>
       <Main locale={locale} />

@@ -4,8 +4,6 @@ import { useState } from 'react';
 import CardModal from './CardModal';
 import { CardData, cardType } from './types';
 import Image from "next/image";
-// import Link from "next/link";
-// import logo from "@/public/images/imed-f.svg";
 import plus from "@/public/svg/plus_bold.svg";
 import plusPurple from "@/public/svg/main/plus_purple.svg";
 import card1 from "@/public/images/main/money1.png";
@@ -24,6 +22,7 @@ interface NewsCompProps {
 export default function CardState({ locale }: NewsCompProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const queryClient = useQueryClient()
+  
   const addCard = useMutation({
     mutationFn: cardUtils.postCard,
     onSuccess: () => {

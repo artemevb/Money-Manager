@@ -37,6 +37,10 @@ const ProfileSettings: React.FC = () => {
         onSuccess: () => {
             toast.success('Succes edit user ')
             queryClient.invalidateQueries({queryKey: ['user']})
+            login.login=''
+            login.oldLogin=''
+            password.oldPassword=''
+            password.password=''
         },
         onError: (err) => {
             console.log(err);
